@@ -17,3 +17,5 @@ class Node:
 	def setNext(self, nxt):
 		self.next = nxt
 
+def hello():
+	print("hello")
