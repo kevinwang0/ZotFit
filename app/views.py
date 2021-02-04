@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .forms import ImportForm
 
 # Create your views here.
 def index(request):
@@ -6,4 +7,5 @@ def index(request):
 
 
 def import_data(request):
-    return render(request, 'import_data.html')
+	form = ImportForm()
+    return render(request, 'import_data.html', {'form':form})
