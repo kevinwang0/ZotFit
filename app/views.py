@@ -11,9 +11,10 @@ def index(request):
 def getinfo(request):
 	print(request.method + "\n\n")
 	if request.method == 'POST':
-		form = ImportForm(request.POST)
+		form = ImportForm(request.POST, request.FILES)
 		if form.is_valid():
 			print("true")
+			handle_uploaded_file(request.FILES['healthData'])
 			return HttpResponseRedirect('/thanks')
 		else:
 			print("false")
@@ -23,3 +24,9 @@ def getinfo(request):
 
 def thanks(request):
 	return render(request, 'thanks.html')
+
+# should prob have this in a different python file
+def handle_uploaded_file(f):
+	with open('uploaded_files/' + str(f), 'wb+') as destination:
+		for chunk in f.chunks():
+			destination.write(chunk)
