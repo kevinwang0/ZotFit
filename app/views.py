@@ -7,7 +7,6 @@ from django.http import HttpResponseRedirect
 def index(request):
 	return render(request, 'base.html')
 
-
 def getinfo(request):
 	print(request.method + "\n\n")
 	if request.method == 'POST':
@@ -30,3 +29,12 @@ def handle_uploaded_file(f):
 	with open('uploaded_files/' + str(f), 'wb+') as destination:
 		for chunk in f.chunks():
 			destination.write(chunk)
+
+def login(request):
+	if request.method == 'POST':
+		form = ImportForm(request.POST)
+		if form.is_valid():
+			return render(request, 'NEW_UNCREATED_HTML.html', {'form':form})
+		else:
+			form = ImportForm()
+	return render(request, 'login.html')
