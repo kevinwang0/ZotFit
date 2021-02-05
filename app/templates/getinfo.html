@@ -10,8 +10,10 @@
 			<form class="card-body m-2" method="POST">
 				{% csrf_token %}
 				<h3 class="card-title">Let's get to know you a bit</h2>
-				{{ form }}
-				<button type="submit" class="btn btn-primary btn-lg">Get started</button>
+				{{ form.as_p }}
+				<div class="text-center">
+					<button type="submit" class="btn btn-primary btn-lg">Get started</button>
+				</div>
 			</form>
 		</div>
 	</div>
