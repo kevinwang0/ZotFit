@@ -5,24 +5,14 @@
 {% endblock %}
 
 {% block content %}
-
-<div class="container">
-<div class="center">
-
-<h2> Let's get to know a little bit about you </h2>
-
-<form method="post" enctype="multipart/form-data">
-
-		{% csrf_token %}
-		
-		{{ form.as_p }}
-
-		<input type="submit" value="Submit" class="btn btn-primary">
-
-</form>
-
-</div>
-</div>
-
-
+	<div class="container-fluid py-4" style="background-image: linear-gradient(#c9efff, #ffffff);">
+		<div class="card col-sm-5 mx-auto">
+			<form class="card-body m-2" method="POST">
+				{% csrf_token %}
+				<h3 class="card-title">Let's get to know you a bit</h2>
+				{{ form }}
+				<button type="submit" class="btn btn-primary btn-lg">Get started</button>
+			</form>
+		</div>
+	</div>
 {% endblock %}
