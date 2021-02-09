@@ -1,25 +1,38 @@
 from django.shortcuts import render
-from .forms import ImportForm
+from .forms import ImportForm, RegisterForm
 from django.http import HttpResponseRedirect
-
+from django.contrib.auth.forms import UserCreationForm
+from django.views.generic.edit import FormView
 
 # Create your views here.
 def index(request):
 	return render(request, 'base.html')
 
-def getinfo(request):
-	print(request.method + "\n\n")
-	if request.method == 'POST':
-		form = ImportForm(request.POST, request.FILES)
-		if form.is_valid():
-			print("true")
-			handle_uploaded_file(request.FILES['healthData'])
-			return HttpResponseRedirect('/thanks')
-		else:
-			print("false")
-	else:
-		form = ImportForm()
-	return render(request, 'getinfo.html', {'form':form})
+class RegisterView(FormView):
+	template_name = 'register.html'
+	form_class = RegisterForm
+	success_url = '/getinfo'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['step'] = '1/2'
+		context['title'] = 'Create an account'
+		context['button_title'] = 'Sign up'
+		return context
+
+
+class GetInfoView(FormView):
+	template_name = 'register.html'
+	form_class = ImportForm
+	# success_url = '/login'
+	success_url = '/' # redirect to home for now
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['step'] = '2/2'
+		context['title'] = "Let's get to know you a bit"
+		context['button_title'] = 'Get started'
+		return context
 
 def thanks(request):
 	return render(request, 'thanks.html')
@@ -30,11 +43,4 @@ def handle_uploaded_file(f):
 		for chunk in f.chunks():
 			destination.write(chunk)
 
-def register(request):
-	if request.method == 'POST':
-		form = ImportForm(request.POST)
-		if form.is_valid():
-			return render(request, 'NEW_UNCREATED_HTML.html', {'form':form})
-		else:
-			form = ImportForm()
-	return render(request, 'register.html')
+
