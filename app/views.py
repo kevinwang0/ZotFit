@@ -9,6 +9,7 @@ def index(request):
 
 
 def getinfo(request):
+	app.read_apple_data.a()
 	print(request.method + "\n\n")
 	if request.method == 'POST':
 		form = ImportForm(request.POST, request.FILES)
