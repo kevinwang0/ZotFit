@@ -2,11 +2,21 @@ from django.shortcuts import render
 from .forms import ImportForm, RegisterForm
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
 # Create your views here.
 def index(request):
 	return render(request, 'base.html')
+
+class HomeView(TemplateView):
+	template_name = "home.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		# TODO: pull this weeks steps from database
+		context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
+		return context
 
 class RegisterView(FormView):
 	template_name = 'register.html'
