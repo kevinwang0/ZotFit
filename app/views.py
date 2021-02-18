@@ -1,16 +1,25 @@
-from django.shortcuts import render
-from .forms import ImportForm, RegisterForm
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
-from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, CreateView
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse, reverse_lazy
+from . import forms
 
 # Create your views here.
 def index(request):
 	return render(request, 'base.html')
 
-class HomeView(TemplateView):
+def logout_view(request):
+	logout(request)
+	return redirect('index')
+
+class HomeView(LoginRequiredMixin, TemplateView):
 	template_name = "home.html"
+	
+	# TODO: login required, if user has not provided info, redirect to get info
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -20,8 +29,7 @@ class HomeView(TemplateView):
 
 class RegisterView(FormView):
 	template_name = 'register.html'
-	form_class = RegisterForm
-	success_url = '/getinfo'
+	form_class = forms.RegisterForm
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -30,12 +38,17 @@ class RegisterView(FormView):
 		context['button_title'] = 'Sign up'
 		return context
 
+	def form_valid(self, form):
+		form.save()
+		reg_user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1'])
+		login(self.request, reg_user)
+		return HttpResponseRedirect(reverse_lazy('getinfo'))
 
-class GetInfoView(FormView):
+
+class GetInfoView(LoginRequiredMixin, FormView):
 	template_name = 'register.html'
-	form_class = ImportForm
-	# success_url = '/login'
-	success_url = '/' # redirect to home for now
+	form_class = forms.MemberForm
+	success_url = reverse_lazy('home')
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)

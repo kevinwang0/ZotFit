@@ -1,10 +1,45 @@
 import uuid
 from django.db import models
+from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
+class Member(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    height = models.PositiveSmallIntegerField(validators=[MinValueValidator(36)]) # in inches
+    weight = models.PositiveSmallIntegerField(validators=[MinValueValidator(50)]) # in lbs
+    birth = models.DateField()
 
+    GENDER_CHOICES = [
+    	('M', 'Male'),
+    	('F', 'Female'),
+    	('O', 'Neither / Prefer not to say'),
+    ]
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='M')
+
+    FITNESS_GOAL = [
+        ('L', 'Lose weight'),
+        ('G', 'Gain muscle'),
+        ('F', 'Improve general fitness / Both'),
+    ]
+    goal = models.CharField(max_length=1, choices=FITNESS_GOAL, default='F')
+
+    dumbbells = models.BooleanField(default=False)
+    benchpress = models.BooleanField(default=False)
+    squatrack = models.BooleanField(default=False)
+
+    # A few example workout preferences (0.0 - 1.0)
+    #squatPreference = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    #benchpressPreference = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    #bicepCurlPreference = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    # A few example workout intensity levels (assuming a scale of 1-3 for now)
+    #bicepDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    #chestDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    #backDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+'''
 class User(models.Model):
-
     # By default, Django creates an auto-incrementing primary key for each model. The
     # following line of code is an alternative way to make a primary key if we don't
     # want to use the default implementation.
@@ -35,17 +70,13 @@ class User(models.Model):
     chestDifficulty = models.IntegerField(default=2)
     backDifficulty = models.IntegerField(default=2)
 
-
     # It might be a good idea to implement gender for recommendation purposes
-    '''
     genderChoices = [
     	(M, 'Male'),
     	(F, 'Female'),
     	(N/A, 'Other'),
     ]
     gender = models.CharField(max_length=20, choices=genderChoices, default=N/A)
-    '''
-
 
 class Exercise(models.Model):
 
@@ -87,3 +118,4 @@ class StrengthWorkout(models.Model):
 
 	workoutID = models.OneToOneField(Workout, on_delete=models.CASCADE)
 	exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+'''
