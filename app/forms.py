@@ -30,8 +30,8 @@ class MemberForm(forms.ModelForm):
 		exclude = ('user',)
 		labels = {
 			'dumbbells': ('I have access to dumbbells.'),
-			'benchpress': ('I have access to a benchpress.'),
-			'squatrack': ('I have access to a squatrack.'),
+			'benchpress': ('I have access to a bench press.'),
+			'squatrack': ('I have access to a squat rack.'),
 		}
 		help_texts = {
 			'height': ('In inches'),

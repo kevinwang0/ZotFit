@@ -13,7 +13,7 @@ class Member(models.Model):
     GENDER_CHOICES = [
     	('M', 'Male'),
     	('F', 'Female'),
-    	('O', 'Neither / Prefer not to say'),
+    	('O', 'Other / Prefer not to say'),
     ]
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='M')
 
