@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Member
+from .models import Member, Workout
 
 class RegisterForm(UserCreationForm):
 	first_name = forms.CharField(label = "First name", max_length=30)
@@ -41,3 +41,19 @@ class MemberForm(forms.ModelForm):
 			'goal': forms.RadioSelect,
 		}
 
+class WorkoutForm(forms.ModelForm):
+	class Meta:
+		model = Workout
+		fields = '__all__'
+		labels = {
+			'dumbbells': ('I have access to dumbbells.'),
+			'benchpress': ('I have access to a bench press.'),
+			'squatrack': ('I have access to a squat rack.'),
+		}
+		help_texts = {
+			'height': ('In inches'),
+		}
+		widgets = {
+			'gender': forms.RadioSelect,
+			'goal': forms.RadioSelect,
+		}
