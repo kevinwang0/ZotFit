@@ -38,6 +38,13 @@ class Member(models.Model):
     #chestDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
     #backDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
 
+class Workout(models.Model):
+    #userID = models.ForeignKey(User, on_delete=models.CASCADE)
+    workoutDate = models.DateTimeField()
+    steps = models.IntegerField()
+    sets = models.IntegerField()
+    reps = models.IntegerField()
+
 '''
 class User(models.Model):
     # By default, Django creates an auto-incrementing primary key for each model. The
