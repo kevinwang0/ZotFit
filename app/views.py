@@ -57,6 +57,21 @@ class GetInfoView(LoginRequiredMixin, FormView):
 		context['button_title'] = 'Get started'
 		return context
 
+class WorkoutView(LoginRequiredMixin, FormView):
+	template_name = 'register.html'
+	form_class = forms.WorkoutForm
+	success_url = reverse_lazy('home')
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = 'Submit Workout Data'
+		context['button_title'] = 'Submit'
+		return context
+
+	def form_valid(self, form):
+		form.save()
+		return HttpResponseRedirect(reverse_lazy('home'))
+
 def thanks(request):
 	return render(request, 'thanks.html')
 
@@ -65,5 +80,3 @@ def handle_uploaded_file(f):
 	with open('uploaded_files/' + str(f), 'wb+') as destination:
 		for chunk in f.chunks():
 			destination.write(chunk)
-
-
