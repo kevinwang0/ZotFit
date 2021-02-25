@@ -44,16 +44,8 @@ class MemberForm(forms.ModelForm):
 class WorkoutForm(forms.ModelForm):
 	class Meta:
 		model = Workout
-		fields = '__all__'
+		exclude = ('user',)
 		labels = {
-			'dumbbells': ('I have access to dumbbells.'),
-			'benchpress': ('I have access to a bench press.'),
-			'squatrack': ('I have access to a squat rack.'),
-		}
-		help_texts = {
-			'height': ('In inches'),
-		}
-		widgets = {
-			'gender': forms.RadioSelect,
-			'goal': forms.RadioSelect,
+			'workoutDate' : 'Workout Date',
+			'workoutName' : 'Workout Name',
 		}
