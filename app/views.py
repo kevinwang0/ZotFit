@@ -69,8 +69,9 @@ class WorkoutView(LoginRequiredMixin, FormView):
 		return context
 
 	def form_valid(self, form):
+		form.instance.user_id = self.request.user.id
 		form.save()
-		return HttpResponseRedirect(reverse_lazy('home'))
+		return super(WorkoutView, self).form_valid(form)
 
 def thanks(request):
 	return render(request, 'thanks.html')
