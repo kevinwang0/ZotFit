@@ -1,4 +1,5 @@
 import uuid
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -39,11 +40,14 @@ class Member(models.Model):
     #backDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
 
 class Workout(models.Model):
-    #userID = models.ForeignKey(User, on_delete=models.CASCADE)
+    #currentUser = get_user_model()
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     workoutDate = models.DateTimeField()
-    steps = models.IntegerField()
-    sets = models.IntegerField()
-    reps = models.IntegerField()
+    workoutName = models.CharField(max_length=30)
+    steps = models.IntegerField(blank=True, null=True, default=None)
+    sets = models.IntegerField(blank=True, null=True, default=None)
+    reps = models.IntegerField(blank=True, null=True, default=None)
 
 '''
 class User(models.Model):
