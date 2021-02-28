@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+	<button type="button" class="btn btn-dark btn-sm" disabled>Step {{ step }}</button>
+{% endblock %}
+
+{% block content %}
+	<div class="container-fluid py-4" style="background-image: linear-gradient(#c9efff, #ffffff);">
+		<div class="card col-sm-5 mx-auto">
+			<form class="card-body m-2" method="POST">
+				{% csrf_token %}
+				<h3 class="card-title">{% block title %}{{ title }}{% endblock %}</h5>
+				{{ form.as_p }}
+				<!-- <div class="row mb-3">
+					<div class="col">
+						<label for="firstName" class="form-label">First name</label>
+						<input type="text" class="form-control" id="firstName" placeholder="John" required>
+					</div>
+					<div class="col">
+						<label for="lastName" class="form-label">Last name</label>
+						<input type="text" class="form-control" id="lastName" placeholder="Smith" required>
+					</div>
+				</div>
+				<div class="mb-5">
+					<label for="birthDate" class="form-label">Date of Birth</label>
+					<input type="date" class="form-control" id="birthDate" required>
+				</div>
+				<div class="mb-3">
+					<label for="email" class="form-label">Email address</label>
+					<input type="email" class="form-control" id="email" placeholder="you@example.com" required>
+				</div>
+				<div class="mb-3">
+					<label for="pass" class="form-label">Password</label>
+					<input type="password" class="form-control" id="pass" placeholder="Password" required>
+				</div>
+				<div class="mb-3">
+					<input type="password" class="form-control" id="confirmPass" placeholder="Confirm password" required>
+				</div> -->
+				<div class="text-center">
+					<button type="submit" class="btn btn-primary btn-lg">{{ button_title }}</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}
