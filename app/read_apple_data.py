@@ -8,6 +8,7 @@ def a(username):
     print(os.listdir())
     # need this for when running from python3 manage.py runserver
     # input_path = '/uploaded_files/apple_health_export_' + username + '/export.xml'
+    # pickle_path = '/uploaded_files/apple_health_export_' + username + '/pickle_data'
     # otherwise working directory is app
     # need a way of story different files as different names, perhaps by username or id number
     input_path = '../uploaded_files/apple_health_export_' + username + '/export.xml'
