@@ -25,9 +25,15 @@ class Member(models.Model):
     ]
     goal = models.CharField(max_length=1, choices=FITNESS_GOAL, default='F')
 
-    dumbbells = models.BooleanField(default=False)
-    benchpress = models.BooleanField(default=False)
-    squatrack = models.BooleanField(default=False)
+    barbell = models.BooleanField(default=False)
+    dumbbell = models.BooleanField(default=False)
+    pullup_bar = models.BooleanField(default=False)
+    resistance_band = models.BooleanField(default=False)
+    bench = models.BooleanField(default=False)
+    medicine_ball = models.BooleanField(default=False)
+
+
+
 
     # A few example workout preferences (0.0 - 1.0)
     #squatPreference = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
