@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
+from django.contrib.auth.forms import AuthenticationForm
 from . import forms
 
 # Create your views here.
@@ -33,7 +34,7 @@ class RegisterView(FormView):
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['step'] = '1/2'
+		context['step'] = 'Step 1/2'
 		context['title'] = 'Create an account'
 		context['button_title'] = 'Sign up'
 		return context
@@ -44,7 +45,6 @@ class RegisterView(FormView):
 		login(self.request, reg_user)
 		return HttpResponseRedirect(reverse_lazy('getinfo'))
 
-
 class GetInfoView(LoginRequiredMixin, FormView):
 	template_name = 'register.html'
 	form_class = forms.MemberForm
@@ -52,10 +52,28 @@ class GetInfoView(LoginRequiredMixin, FormView):
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['step'] = '2/2'
+		context['step'] = 'Step 2/2'
 		context['title'] = "Let's get to know you a bit"
 		context['button_title'] = 'Get started'
 		return context
+
+class LoginView(FormView):
+	template_name = 'register.html'
+	form_class = AuthenticationForm
+	success_url = reverse_lazy('home')
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['step'] = 'Login'
+		context['title'] = 'Sign in to ZotFit'
+		context['button_title'] = 'Sign in'
+		return context
+
+	def form_valid(self, form):
+		login(self.request, form.get_user())
+
+		return super(LoginView, self).form_valid(form)
+
 
 class WorkoutView(LoginRequiredMixin, FormView):
 	template_name = 'register.html'
