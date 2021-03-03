@@ -27,11 +27,22 @@ class RegisterForm(UserCreationForm):
 class MemberForm(forms.ModelForm):
 	class Meta:
 		model = Member
-		exclude = ('user',)
+		exclude = ('user', 'squat', 'lunge', 'reverseLunge', 'jumpSquat', 'lateralLunge', 'calfRaise', 
+					'singleCalfRaise', 'jumpingJack', 'sealJump', 'inwardCalfRaise', 'gluteBridge',
+					'inchworm', 'goodMorning', 'romanianDeadlift', 'quadLegCurl', 'pushup', 'benchDip',
+					'pressup', 'plankTap', 'diamondPushup', 'russianTwist', 'situp', 'legRaise', 'deadBug',
+					'crunchyFrog', 'reverseSnowAngel', 'superman', 'plankRow', 'lowRow', 'latPulldown', 
+					'pullup', 'bicepCurl', 'deadlift', 'hammerCurl', 'medicineBallSlam', 'benchpress',
+					'shoulderPress', 'tricepExtension', 'chinup', 'backDifficulty', 'bicepDifficulty',
+					'calfDifficulty', 'coreDifficulty', 'hamstringDifficulty', 'quadricepDifficulty',
+					'tricepDifficulty', 'bodyWeight')
 		labels = {
-			'dumbbells': ('I have access to dumbbells.'),
-			'benchpress': ('I have access to a bench press.'),
-			'squatrack': ('I have access to a squat rack.'),
+			'barbell': ('I have access to barbells.'),
+			'benchpressEquipment': ('I have access to a bench press.'),
+			'dumbbell': ('I have access to a dumbbells.'),
+			'pullupBar': ('I have access to a pullup bar.'),
+			'medicineBall': ('I have access to a medicine ball.'),
+			'resistanceBand': ('I have access to a resistance band.'),
 		}
 		help_texts = {
 			'height': ('In inches'),
