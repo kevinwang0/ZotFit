@@ -48,7 +48,6 @@ class RegisterView(FormView):
 class GetInfoView(LoginRequiredMixin, FormView):
 	template_name = 'register.html'
 	form_class = forms.MemberForm
-	success_url = reverse_lazy('home')
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -56,6 +55,12 @@ class GetInfoView(LoginRequiredMixin, FormView):
 		context['title'] = "Let's get to know you a bit"
 		context['button_title'] = 'Get started'
 		return context
+
+	def form_valid(self, form):
+		member = form.save(commit=False)
+		member.user = self.request.user
+		member.save()
+		return HttpResponseRedirect(reverse_lazy('home'))
 
 class LoginView(FormView):
 	template_name = 'register.html'
