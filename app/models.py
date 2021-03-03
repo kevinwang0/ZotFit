@@ -73,7 +73,7 @@ class Member(models.Model):
     goal = models.CharField(max_length=1, choices=FITNESS_GOAL, default='F')
 
     barbell = models.BooleanField(default=False)
-    benchpress = models.BooleanField(default=False)
+    benchpressEquipment = models.BooleanField(default=False)
     dumbbell = models.BooleanField(default=False)
     pullupBar = models.BooleanField(default=False)
     medicineBall = models.BooleanField(default=False)
