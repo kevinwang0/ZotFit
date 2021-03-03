@@ -4,7 +4,6 @@
     <title>ZotFit | {% block title %}Your new fitness partner{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-    {% url 'logout' as logout_page %}
     {% block head %}{% endblock %}
     <style>
         .btn-outline-primary {
@@ -27,7 +26,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container">
-        <span class="navbar-brand mb-0 h1" style="color: #1f5ba1">ZotFit</span>
+        <a href="{% url 'index' %}" class="navbar-brand mb-0 h1" style="color: #1f5ba1">ZotFit</a>
         {% block navbar %}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -46,7 +45,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">Contact</a>
                 </li>
-                <a href="/login" class="btn btn-dark btn-sm ms-3 my-1">Login</a>
+                <a href="{% url 'login' %}" class="btn btn-dark btn-sm ms-3 my-1">Login</a>
             </ul>
         </div>
         {% endblock %}
@@ -82,7 +81,7 @@
             <div class="text-center py-5 mx-auto" style="width: 50%">
                 <h2>About the team</h2>
                 <p class="fs-5">We are a collective of students at the University of California who wanted to help people who want to exercise get in shape. In developing ZotFit, we hope to improve the lives of people who have health related goals and empower them to get in shape.</p>
-                <a href="/register" class="btn btn-outline-primary btn-lg mt-3" role="button">Get started today!</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg mt-3" role="button">Get started today!</a>
             </div>
         </div>
         {% endblock %}

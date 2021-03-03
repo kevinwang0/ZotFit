@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block navbar %}
-	<a href="{{ logout_page }}" class="btn btn-dark btn-sm" disabled>Logout</a>
+	<a href="{% url 'logout' %}" class="btn btn-dark btn-sm">Logout</a>
 {% endblock %}
 
 {% block content %}
