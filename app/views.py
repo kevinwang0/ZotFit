@@ -29,7 +29,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
 		return context
 
 class RegisterView(FormView):
-	template_name = 'register.html'
+	template_name = 'form.html'
 	form_class = forms.RegisterForm
 
 	def get_context_data(self, **kwargs):
@@ -46,7 +46,7 @@ class RegisterView(FormView):
 		return HttpResponseRedirect(reverse_lazy('getinfo'))
 
 class GetInfoView(LoginRequiredMixin, FormView):
-	template_name = 'register.html'
+	template_name = 'form.html'
 	form_class = forms.MemberForm
 
 	def get_context_data(self, **kwargs):
@@ -63,7 +63,7 @@ class GetInfoView(LoginRequiredMixin, FormView):
 		return HttpResponseRedirect(reverse_lazy('home'))
 
 class LoginView(FormView):
-	template_name = 'register.html'
+	template_name = 'form.html'
 	form_class = AuthenticationForm
 	success_url = reverse_lazy('home')
 
@@ -81,7 +81,7 @@ class LoginView(FormView):
 
 
 class WorkoutView(LoginRequiredMixin, FormView):
-	template_name = 'register.html'
+	template_name = 'form.html'
 	form_class = forms.WorkoutForm
 	success_url = reverse_lazy('home')
 
