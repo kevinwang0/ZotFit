@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView, CreateView
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.forms import AuthenticationForm
@@ -12,10 +12,6 @@ from . import forms
 # Create your views here.
 def index(request):
 	return render(request, 'base.html')
-
-def logout_view(request):
-	logout(request)
-	return redirect('index')
 
 # example object, remove recommendation model and system complete
 class ExampleRecommendation:
@@ -73,24 +69,6 @@ class GetInfoView(LoginRequiredMixin, FormView):
 		member.user = self.request.user
 		member.save()
 		return HttpResponseRedirect(reverse_lazy('home'))
-
-class LoginView(FormView):
-	template_name = 'form.html'
-	form_class = AuthenticationForm
-	success_url = reverse_lazy('home')
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		context['step'] = 'Login'
-		context['title'] = 'Sign in to ZotFit'
-		context['button_title'] = 'Sign in'
-		return context
-
-	def form_valid(self, form):
-		login(self.request, form.get_user())
-
-		return super(LoginView, self).form_valid(form)
-
 
 class WorkoutView(LoginRequiredMixin, FormView):
 	template_name = 'form.html'

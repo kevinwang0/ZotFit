@@ -45,7 +45,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">Contact</a>
                 </li>
+                {% if user.is_authenticated %}
+                <a href="{% url 'home' %}" class="btn btn-dark btn-sm ms-3 my-1">Home</a>
+                {% else %}
                 <a href="{% url 'login' %}" class="btn btn-dark btn-sm ms-3 my-1">Login</a>
+                {% endif %}
             </ul>
         </div>
         {% endblock %}
