@@ -12,25 +12,25 @@
 {% endblock %}
 
 {% block content %}
-	<div class="container-fluid pb-5" style="background-image: linear-gradient(#daebff, #ffffff);">
-        <div class="container">
+	<div class="container-fluid" style="background-image: linear-gradient(#daebff, #ffffff);">
+        <div class="container py-5">
             <!-- <h2 class="pt-5 py-3" style="font-weight: bold;">Hi, {{ user.first_name }}</h2> -->
-            <h2 class="pt-5 py-3" style="font-weight: bold;">Charts<h2>
-            <div class="card mx-auto shadow">
+            <h2 style="font-weight: bold;">Charts<h2>
+            <div class="card my-4 mx-auto shadow">
                 <div class="card-body m-2">
                     <h4 class="card-title pb-3" style="font-weight: bold;">Steps Per Day</h4>
                     <canvas id="my-chart"></canvas>
                 </div>
             </div>
-            <h2 class="pt-5 pb-3" style="font-weight: bold;">Today's workout</h2>
-            <div class="card-group shadow">
+            <h2 class="pt-4" style="font-weight: bold;">Today's workout</h2>
+            <div class="card-group my-4 shadow">
                 {% for workout in recommendations %}
                 <div class="card rounded-0">
                     <div class="ratio ratio-16x9">
                         <iframe src="{{ workout.embed }}" allowfullscreen></iframe>
                     </div>
                     <div class="card-body">
-                    <h5 class="card-title" style="font-weight: bold;">{{ workout.name }} ({{ workout.combination }})</h5>
+                    <h4 class="card-title" style="font-weight: bold;">{{ workout.name }} ({{ workout.combination }})</h4>
                     <p class="card-text"><small class="text-muted">Requires: {{ workout.requires }}</small></p>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
             scales: {
                 x: {
                     // hide x axis scale
-                    display: false,
+                    display: false
                 },
                 y: {
                     beginAtZero: true,
@@ -91,8 +91,8 @@
                         borderDash: [4]
                     }
                 }
-            },
-        },
+            }
+        }
     });
     </script>
 {% endblock %}
