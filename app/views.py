@@ -17,6 +17,13 @@ def logout_view(request):
 	logout(request)
 	return redirect('index')
 
+# example object, remove recommendation model and system complete
+class ExampleRecommendation:
+	name = 'Example Workout'
+	embed = 'https://www.youtube.com/embed/1b98WrRrmUs' # example: jumping jacks
+	combination = '3x10'
+	requires = 'None'
+
 class HomeView(LoginRequiredMixin, TemplateView):
 	template_name = "home.html"
 	
@@ -26,6 +33,11 @@ class HomeView(LoginRequiredMixin, TemplateView):
 		context = super().get_context_data(**kwargs)
 		# TODO: pull this weeks steps from database
 		context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
+		context['recommendations'] = [
+			ExampleRecommendation(),
+			ExampleRecommendation(),
+			ExampleRecommendation(),
+		]
 		return context
 
 class RegisterView(FormView):
