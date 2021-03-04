@@ -3,18 +3,22 @@ from django.http import HttpResponseRedirect
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView, CreateView
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
+from django.contrib.auth.forms import AuthenticationForm
 from . import forms
 
 # Create your views here.
 def index(request):
 	return render(request, 'base.html')
 
-def logout_view(request):
-	logout(request)
-	return redirect('index')
+# example object, remove recommendation model and system complete
+class ExampleRecommendation:
+	name = 'Example Workout'
+	embed = 'https://www.youtube.com/embed/1b98WrRrmUs' # example: jumping jacks
+	combination = '3x10'
+	requires = 'None'
 
 class HomeView(LoginRequiredMixin, TemplateView):
 	template_name = "home.html"
@@ -25,15 +29,20 @@ class HomeView(LoginRequiredMixin, TemplateView):
 		context = super().get_context_data(**kwargs)
 		# TODO: pull this weeks steps from database
 		context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
+		context['recommendations'] = [
+			ExampleRecommendation(),
+			ExampleRecommendation(),
+			ExampleRecommendation(),
+		]
 		return context
 
 class RegisterView(FormView):
-	template_name = 'register.html'
+	template_name = 'form.html'
 	form_class = forms.RegisterForm
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['step'] = '1/2'
+		context['step'] = 'Step 1/2'
 		context['title'] = 'Create an account'
 		context['button_title'] = 'Sign up'
 		return context
@@ -44,21 +53,25 @@ class RegisterView(FormView):
 		login(self.request, reg_user)
 		return HttpResponseRedirect(reverse_lazy('getinfo'))
 
-
 class GetInfoView(LoginRequiredMixin, FormView):
-	template_name = 'register.html'
+	template_name = 'form.html'
 	form_class = forms.MemberForm
-	success_url = reverse_lazy('home')
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['step'] = '2/2'
+		context['step'] = 'Step 2/2'
 		context['title'] = "Let's get to know you a bit"
 		context['button_title'] = 'Get started'
 		return context
 
+	def form_valid(self, form):
+		member = form.save(commit=False)
+		member.user = self.request.user
+		member.save()
+		return HttpResponseRedirect(reverse_lazy('home'))
+
 class WorkoutView(LoginRequiredMixin, FormView):
-	template_name = 'register.html'
+	template_name = 'form.html'
 	form_class = forms.WorkoutForm
 	success_url = reverse_lazy('home')
 

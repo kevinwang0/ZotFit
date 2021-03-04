@@ -3,13 +3,60 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from datetime import date
+
+today = date.today()
 
 # Create your models here.
+
+# Manager for Member model (used for tests.py)
+class MemberManager(models.Manager):
+    def createMember(self, user, height, weight, birth):
+        member = self.create(user=user, height=height, weight=weight, birth=birth)
+        return member
+
 class Member(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     height = models.PositiveSmallIntegerField(validators=[MinValueValidator(36)]) # in inches
     weight = models.PositiveSmallIntegerField(validators=[MinValueValidator(50)]) # in lbs
     birth = models.DateField()
+
+    def ageScore(self):
+        age = today.year - self.birth.year - ((today.month, today.day) < (self.birth.month, self.birth.day))
+        if age <= 8:
+            return 1
+        elif age <= 14:
+            return 5
+        elif age <= 18:
+            return 7
+        elif age <= 25:
+            return 11
+        elif age <= 35:
+            return 8
+        elif age <= 50:
+            return 5
+        elif age <= 65:
+            return 4
+        elif age <= 80:
+            return 2
+        else:
+            return 1
+
+    def bmiScore(self):
+        bmi = (self.weight / pow(self.height, 2)) * 703
+        if bmi <= 15.0:
+            return 1
+        elif bmi <= 18.5:
+            return 5
+        elif bmi <= 24.9:
+            return 9
+        elif bmi <= 29.9:
+            return 5
+        else:
+            return 1
+
+    def healthScore(self):
+        return (self.ageScore() + self.bmiScore()) * (1 if self.gender == 'M' else 0.85)
 
     GENDER_CHOICES = [
     	('M', 'Male'),
@@ -26,24 +73,72 @@ class Member(models.Model):
     goal = models.CharField(max_length=1, choices=FITNESS_GOAL, default='F')
 
     barbell = models.BooleanField(default=False)
+    benchpressEquipment = models.BooleanField(default=False)
     dumbbell = models.BooleanField(default=False)
-    pullup_bar = models.BooleanField(default=False)
-    resistance_band = models.BooleanField(default=False)
-    bench = models.BooleanField(default=False)
-    medicine_ball = models.BooleanField(default=False)
+    pullupBar = models.BooleanField(default=False)
+    medicineBall = models.BooleanField(default=False)
+    resistanceBand = models.BooleanField(default=False)
 
+    bodyWeight = models.BooleanField(default=True)
 
+    # workout preferences (0.0 - 1.0)
+    squat = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    lunge = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    reverseLunge = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    jumpSquat = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    lateralLunge = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
 
+    calfRaise = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    singleCalfRaise = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    jumpingJack = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    sealJump = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    inwardCalfRaise = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
 
-    # A few example workout preferences (0.0 - 1.0)
-    #squatPreference = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
-    #benchpressPreference = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
-    #bicepCurlPreference = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    gluteBridge = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    inchworm = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    goodMorning = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    romanianDeadlift = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    quadLegCurl = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
 
-    # A few example workout intensity levels (assuming a scale of 1-3 for now)
-    #bicepDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
-    #chestDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
-    #backDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    pushup = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    benchDip = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    pressup = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    plankTap = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    diamondPushup = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    russianTwist = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    situp = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    legRaise = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    deadBug = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    crunchyFrog = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    reverseSnowAngel = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    superman = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    plankRow = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    lowRow = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    latPulldown = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    pullup = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    bicepCurl = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    deadlift = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    benchpress= models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    hammerCurl = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    medicineBallSlam = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    shoulderPress = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    tricepExtension = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    chinup = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    # workout intensity levels (assuming a scale of 0-100)
+    backDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
+    bicepDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
+    calfDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
+    coreDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
+    hamstringDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
+    quadricepDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
+    tricepDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
+
+    objects = MemberManager()
 
 class Workout(models.Model):
     #currentUser = get_user_model()
