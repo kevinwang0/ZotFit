@@ -138,6 +138,7 @@ class Member(models.Model):
     quadricepDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
     tricepDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
 
+    # assigns the django user id to the 'user_id' field for the member in the db
     objects = MemberManager()
 
 class Workout(models.Model):

@@ -2,9 +2,22 @@
 import datetime
 import pandas as pd
 import random
+from .models import MemberManager, Member
+from django.contrib.auth.models import User
+
 
 # curr_user = Member.objects.get(name="boby", age=10, "get current user somehow")
-
+def get_user(request):
+    curr_user = request.user
+    print(curr_user.id)
+    # if the user is logged in
+    if request.user.is_authenticated:
+        member = Member.objects.get(user=request.user.id)
+        print(member.ageScore())
+        print("AUTHENTICATED")
+    # not logged in
+    else:
+        print("UNAUTHENTICATED")
 
 def get_valid_equipment(user):
     # returns list of valid equipment based on what the user owns
@@ -100,9 +113,9 @@ def make_recommendations(curr_user):
     # returns dict of exercies with sets and reps
     # TODO: consider user and day of week
     # need this for when running from python3 manage.py runserver
-    # input_path = '/app/exercises.csv'
+    input_path = './app/exercises.csv'
     # otherwise working directory is app
-    input_path = '../app/exercises.csv'
+    # input_path = '../app/exercises.csv'
 
     df = pd.read_csv(input_path)
     print(df)
@@ -193,4 +206,4 @@ def make_recommendations(curr_user):
         #invalid goal
     """
 
-make_recommendations(1)
+# make_recommendations(1)

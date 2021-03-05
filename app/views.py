@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.forms import AuthenticationForm
 from . import forms
+from . import recommendations
 
 # Create your views here.
 def index(request):
@@ -34,6 +35,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
 			ExampleRecommendation(),
 			ExampleRecommendation(),
 		]
+		print(recommendations.get_user(self.request))
 		return context
 
 class RegisterView(FormView):
