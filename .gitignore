@@ -140,3 +140,5 @@ cython_debug/
 # IntelliJ
 .idea
 *.iws
+.DS_Store
+app/migrations/0001_initial.py
