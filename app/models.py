@@ -68,7 +68,7 @@ class Member(models.Model):
     FITNESS_GOAL = [
         ('L', 'Lose weight'),
         ('G', 'Gain muscle'),
-        ('F', 'Improve general fitness / Both'),
+        ('B', 'Improve general fitness / Both'),
     ]
     goal = models.CharField(max_length=1, choices=FITNESS_GOAL, default='F')
 
@@ -129,14 +129,53 @@ class Member(models.Model):
     tricepExtension = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
     chinup = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
 
-    # workout intensity levels (assuming a scale of 0-100)
-    backDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
-    bicepDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
-    calfDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
-    coreDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
-    hamstringDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
-    quadricepDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
-    tricepDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
+    # workout intensity levels (0.0 - 1.0)
+    squatDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    lungeDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    reverseLungeDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    jumpSquatDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    lateralLungeDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    calfRaiseDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    singleCalfRaiseDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    jumpingJackDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    sealJumpDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    inwardCalfRaiseDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    gluteBridgeDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    inchwormDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    goodMorningDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    romanianDeadliftDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    quadLegCurlDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    pushupDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    benchDipDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    pressupDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    plankTapDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    diamondPushupDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    russianTwistDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    situpDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    legRaiseDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    deadBugDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    crunchyFrogDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    reverseSnowAngelDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    supermanDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    plankRowDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    lowRowDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    latPulldownDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    pullupDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    bicepCurlDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    deadliftDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    benchpressDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    hammerCurlDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+
+    medicineBallSlamDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    shoulderPressDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    tricepExtensionDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
+    chinupDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=0.5)
 
     objects = MemberManager()
 
