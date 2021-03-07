@@ -33,9 +33,18 @@ class MemberForm(forms.ModelForm):
 					'pressup', 'plankTap', 'diamondPushup', 'russianTwist', 'situp', 'legRaise', 'deadBug',
 					'crunchyFrog', 'reverseSnowAngel', 'superman', 'plankRow', 'lowRow', 'latPulldown', 
 					'pullup', 'bicepCurl', 'deadlift', 'hammerCurl', 'medicineBallSlam', 'benchpress',
-					'shoulderPress', 'tricepExtension', 'chinup', 'backDifficulty', 'bicepDifficulty',
-					'calfDifficulty', 'coreDifficulty', 'hamstringDifficulty', 'quadricepDifficulty',
-					'tricepDifficulty', 'bodyWeight')
+					'shoulderPress', 'tricepExtension', 'chinup', 'squatDifficulty', 'lungeDifficulty', 
+					'reverseLungeDifficulty', 'jumpSquatDifficulty', 'lateralLungeDifficulty', 
+					'calfRaiseDifficulty', 'singleCalfRaiseDifficulty', 'jumpingJackDifficulty', 
+					'sealJumpDifficulty', 'inwardCalfRaiseDifficulty', 'gluteBridgeDifficulty',
+					'inchwormDifficulty', 'goodMorningDifficulty', 'romanianDeadliftDifficulty', 
+					'quadLegCurlDifficulty', 'pushupDifficulty', 'benchDipDifficulty', 'pressupDifficulty', 
+					'plankTapDifficulty', 'diamondPushupDifficulty', 'russianTwistDifficulty', 'situpDifficulty', 
+					'legRaiseDifficulty', 'deadBugDifficulty', 'crunchyFrogDifficulty', 'reverseSnowAngelDifficulty', 
+					'supermanDifficulty', 'plankRowDifficulty', 'lowRowDifficulty', 'latPulldownDifficulty', 
+					'pullupDifficulty', 'bicepCurlDifficulty', 'deadliftDifficulty', 'hammerCurlDifficulty', 
+					'medicineBallSlamDifficulty', 'benchpressDifficulty', 'shoulderPressDifficulty', 
+					'tricepExtensionDifficulty', 'chinupDifficulty', 'bodyWeight')
 		labels = {
 			'barbell': ('I have access to barbells.'),
 			'benchpressEquipment': ('I have access to a bench press.'),
