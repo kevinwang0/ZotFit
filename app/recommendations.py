@@ -109,13 +109,14 @@ class Recommendation:
 
     def find_exercise_diff(self, exercise):
         # find exercise difficulty in the model
-        return getattr(self.user, exercise + 'Difficulty')
+        # return getattr(self.user, exercise + 'Difficulty')
+        return 1
     
     def fill_difficulty(self):
         # TODO: for current user
         # returns list of overall scores corresponding to the exercises they are recommended
-        for exercise in self.exercise_recs_id:
-            self.overall_score.append(self.user.healthScore() * find_exercise_diff(exercise))
+        for exercise in self.exercise_recs_name:
+            self.overall_score.append(self.user.healthScore() * self.find_exercise_diff(exercise))
 
     def get_sets_reps(self):
         # returns dict of {id: {sets, reps}} based off the overall difficulty for
@@ -325,6 +326,7 @@ def make_recommendations(curr_user):
 
     print(final_exercises)
 """
+"""
     valid_equipment = get_valid_equipment(curr_user)
     # if users goal is lose weight, less exercise days
     # recommend legs, core mon
@@ -504,6 +506,7 @@ def make_recommendations(curr_user):
 
 
     print(final_exercises)
+"""
 """
     valid_equipment = get_valid_equipment(curr_user)
     # if users goal is lose weight, less exercise days
