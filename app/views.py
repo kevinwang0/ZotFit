@@ -30,12 +30,13 @@ class HomeView(LoginRequiredMixin, TemplateView):
 		context = super().get_context_data(**kwargs)
 		# TODO: pull this weeks steps from database
 		context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
-		context['recommendations'] = [
-			ExampleRecommendation(),
-			ExampleRecommendation(),
-			ExampleRecommendation(),
-		]
-		print(recommendations.get_user(self.request))
+		
+		# access the user object that is stored in the database
+		# note that the django user id and the member user id stored in db are different
+		r = recommendations.Recommendation(self.request)
+		
+		r.make_recommendations()
+		context['recommendations'] = r.final_recs
 		return context
 
 class RegisterView(FormView):
