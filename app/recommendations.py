@@ -5,6 +5,12 @@ import random
 from .models import MemberManager, Member
 from django.contrib.auth.models import User
 
+class Exercise:
+    def __init__(self, name, sets, reps, video_link, eqp_list):
+        self.name = name
+        self.combination = str(sets) + 'x' + str(reps)
+        self.embed = video_link
+        self.requires = eqp_list
 
 
 class Recommendation:
@@ -25,12 +31,21 @@ class Recommendation:
         self.user_eqp = ['bodyweight']
 
         # user's pref for all the exercises that exist
-        self.weight_list = []
+        self.pref_list = []
 
         # all the valid exercises that exist
         self.all_exercise_id_list = []
         self.all_exercise_name_list = []
-    
+
+        # ids of the exercises that the user is recommended
+        self.exercise_recs_id = []
+
+        # list of scores per exercise that user is recommended
+        self.overall_score = []
+
+        # list of the recommended sets and reps, video links, and equipment for all recommended exercises
+        self.final_recs = []
+
     def get_valid_equipment(self):
         # returns list of valid equipment based on what the user owns
         if self.user.barbell:
@@ -49,13 +64,13 @@ class Recommendation:
     def find_exercise_pref(self, exercise):
         # find exercise preference in the model
         return 1
-        # return getattr(curr_user, exercise)
+        # return getattr(self.user, exercise)
     
     def fill_preferences(self):
         # TODO: for current user
         # returns list of preference weight corresponding to the exercise list
         for exercise in self.all_exercise_name_list:
-            self.weight_list.append(self.find_exercise_pref(exercise))
+            self.pref_list.append(self.find_exercise_pref(exercise))
     
     def get_valid_exercises(self, muscle):
         # returns list of valid exercises based on the target muscle and equipment list
@@ -71,27 +86,58 @@ class Recommendation:
 
     def make_exercise_rec(self, muscle_list):
         # returns list of exercises that we recommend the user based off their preferences
-        final_recs = set()
+
         for muscle in muscle_list:
-            get_valid_exercises(muscle)
-            print(muscle, exercises)
+            self.get_valid_exercises(muscle)
             self.fill_preferences()
-            choices = random.choices(population=exercises, weights=prefs, k=50)
+            choices = random.choices(population=self.all_exercise_id_list, weights=self.pref_list, k=50)
 
             counter = 0
             i = 0
             while i < len(choices) and counter < 2:
-                if choices[i] not in final_recs:
-                    final_recs.add(choices[i])
+                if choices[i] not in self.exercise_recs_id:
+                    self.exercise_recs_id.append(choices[i])
                     counter += 1
                 i += 1
-        return list(final_recs)
 
-    def find_exercise_diff(exercise):
+
+    def find_exercise_diff(self, exercise):
         # find exercise difficulty in the model
         return 1
+        # return getattr(self.user, exercise + 'Difficulty')
     
+    def fill_difficulty(self):
+        # TODO: for current user
+        # returns list of overall scores corresponding to the exercises they are recommended
+        for exercise in self.exercise_recs_id:
+            self.overall_score.append(self.user.healthScore() * find_exercise_diff(exercise))
+
+    def get_sets_reps(self):
+        # returns dict of {id: {sets, reps}} based off the overall difficulty for
+        # each exercise
+
+        for i in range(len(self.exercise_recs_id)):
+            for index, row in self.df.loc[(self.df['id'] == self.exercise_recs_id[i]) & (self.df['overallMin'] < self.overall_score[i]) & (
+                    self.overall_score[i] < self.df['overallMax'])].iterrows():
+                optional_eqp = []
+                for eqp in self.user_eqp:
+                    if row[eqp]:
+                        optional_eqp.append(eqp)
+
+                ex = Exercise(row['exercise'], row['sets'], row['reps'], row['embed'], optional_eqp)
+                self.final_recs.append(ex)
     
+    def make_recommendations(self):
+        
+        # get todays day of week, monday is 0 sunday is 6
+        weekday = datetime.datetime.today().weekday()
+
+        self.make_exercise_rec(['calf', 'hamstring'])
+        print(final_exercises)
+        self.fill_difficulty()
+        print(self.get_sets_reps())
+        print(final_exercises)
+
 # curr_user = Member.objects.get(name="boby", age=10, "get current user somehow")
 
 
@@ -187,8 +233,6 @@ def get_sets_reps(df, final_exercises, overall_diff):
             out[final_exercises[i]]['reps'] = row['reps']
     return out
 
-
-
 def make_recommendations(curr_user):
     # returns dict of exercies with sets and reps
     # TODO: consider user and day of week
@@ -274,6 +318,13 @@ def make_recommendations(curr_user):
             pass
         elif weekday == 6:
             pass
+
+
+Monday:    prev = None, so day 1: quad calf
+Wednesday: prev = quad calf , so day 2: bicep tricep
+Friday:    prev = bicep tricep, so day 3: back core
+Monday:    prev = back core, so day 4: hamstring
+Wednesday: prev = hamstring, so day 5: quad calf
 
     else:
         #invalid goal
