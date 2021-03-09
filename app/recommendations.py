@@ -49,6 +49,7 @@ class Recommendation:
 
         # list of the recommended sets and reps, video links, and equipment for all recommended exercises
         self.final_recs = []
+        self.step_rec = 0
 
     def get_valid_equipment(self):
         # returns list of valid equipment based on what the user owns
@@ -139,10 +140,9 @@ class Recommendation:
                     self.final_recs.append(ex)
     
     def make_steps_rec(self):
-        overall_step_score = self.health_score * self.user.stepDifficulty
+        overall_step_score = self.health_score * float(self.user.stepDifficulty)
         self.step_rec = int(self.steps_df.loc[(self.steps_df['difficultyMin'] <= overall_step_score) & \
             (self.steps_df['difficultyMax'] >= overall_step_score)]['stepCount'])
-        print(self.step_rec)
 
     def get_muscle_groups(self):
        
@@ -219,12 +219,17 @@ class Recommendation:
     def make_recommendations(self):
         # store the equipment that the user has
         self.get_valid_equipment()
-
+        print("health: ", self.health_score, "stepDifficulty: ", self.user.stepDifficulty)
         # get the list of muscles that have to be worked out (or empty list if none have to be worked out)
         muscle_list = self.get_muscle_groups()
         print("muscle list: ", muscle_list)
         self.make_exercise_rec(muscle_list)
         self.make_steps_rec()
+        if not muscle_list:
+            self.step_rec += 500
+        
+        print("steps: ", self.step_rec)
+
         self.fill_difficulty()
         print(self.final_recs)
         print(self.get_sets_reps())

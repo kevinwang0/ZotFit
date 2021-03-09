@@ -56,7 +56,7 @@ class Member(models.Model):
             return 1
 
     def healthScore(self):
-        return (self.ageScore() + self.bmiScore()) * (1 if self.gender == 'M' else 0.85)
+        return (self.ageScore() + self.bmiScore())/2 * (1 if self.gender == 'M' else 0.85)
 
     GENDER_CHOICES = [
     	('M', 'Male'),
