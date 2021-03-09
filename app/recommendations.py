@@ -23,9 +23,12 @@ class Recommendation:
             print("UNAUTHENTICATED")
 
         input_path = './app/exercises.csv'
+        steps_path = './app/steps.csv'
 
+        self.health_score = self.user.healthScore()
         # list of all the exercises
         self.df = pd.read_csv(input_path)
+        self.steps_df = pd.read_csv(steps_path)
 
         # equipment that the user has
         self.user_eqp = ['bodyweight']
@@ -99,7 +102,7 @@ class Recommendation:
             while i < len(choices) and counter < 2:
                 if choices[i] not in self.exercise_recs_id:
                     self.exercise_recs_id.append(choices[i])
-                    self.exercise_recs_name.append(self.df.loc[(self.df['id'] == choices[i])]['exercise'].unique())
+                    self.exercise_recs_name.append(self.df.loc[(self.df['id'] == choices[i])]['exercise'].unique()[0])
                 
                     counter += 1
                 print(self.exercise_recs_id)
@@ -109,8 +112,8 @@ class Recommendation:
 
     def find_exercise_diff(self, exercise):
         # find exercise difficulty in the model
-        # return getattr(self.user, exercise + 'Difficulty')
-        return 1
+        return getattr(self.user, exercise + 'Difficulty')
+        # return 1
     
     def fill_difficulty(self):
         # TODO: for current user
@@ -121,96 +124,117 @@ class Recommendation:
     def get_sets_reps(self):
         # returns dict of {id: {sets, reps}} based off the overall difficulty for
         # each exercise
-
+        final_recs = set()
         for i in range(len(self.exercise_recs_id)):
             for index, row in self.df.loc[(self.df['id'] == self.exercise_recs_id[i]) & (self.df['overallMin'] < self.overall_score[i]) & (
                     self.overall_score[i] < self.df['overallMax'])].iterrows():
-                optional_eqp = []
-                for eqp in self.user_eqp:
-                    if row[eqp]:
-                        optional_eqp.append(eqp)
+                if row['exercise'] not in final_recs:
+                    optional_eqp = []
+                    for eqp in self.user_eqp:
+                        if row[eqp]:
+                            optional_eqp.append(eqp)
 
-                ex = Exercise(row['exercise'], row['sets'], row['reps'], row['video link'], optional_eqp)
-                self.final_recs.append(ex)
+                    ex = Exercise(row['exercise'], row['sets'], row['reps'], row['video link'], optional_eqp)
+                    final_recs.add(row['exercise'])
+                    self.final_recs.append(ex)
     
-    def make_recommendations(self):
-        
+    def make_steps_rec(self):
+        overall_step_score = self.health_score * self.user.stepDifficulty
+        self.step_rec = int(self.steps_df.loc[(self.steps_df['difficultyMin'] <= overall_step_score) & \
+            (self.steps_df['difficultyMax'] >= overall_step_score)]['stepCount'])
+        print(self.step_rec)
+
+    def get_muscle_groups(self):
+       
         # get todays day of week, monday is 0 sunday is 6
         weekday = datetime.datetime.today().weekday()
 
-        self.make_exercise_rec(['calf', 'hamstring'])
+        print("Goal: ", self.user.goal, "Weekday: ", weekday)
+        # if users goal is lose weight, less exercise days
+        # recommend legs, core mon
+        # recommend arms, back fri
+        muscle_list = []
+        if self.user.goal == 'L':
+            if weekday == 0:
+                muscle_list = ['quadricep', 'calf', 'hamstring', 'core']
+            elif weekday == 1:
+                pass
+            elif weekday == 2:
+                pass
+            elif weekday == 3:
+                pass
+            elif weekday == 4:
+                muscle_list = ['bicep', 'tricep', 'back']
+            elif weekday == 5:
+                pass
+            elif weekday == 6:
+                pass
 
+
+        # if users goal is gain muscle, more exercise days
+        # recommend quads, hamstring mon
+        # recommend bicep, tricep wed
+        # recommend calf, core fri
+        # recommend back sun
+        elif self.user.goal == 'G':
+            if weekday == 0:
+                muscle_list = ['quadricep', 'hamstring']
+            elif weekday == 1:
+                pass
+            elif weekday == 2:
+                muscle_list = ['bicep', 'tricep']
+            elif weekday == 3:
+                pass
+            elif weekday == 4:
+                muscle_list = ['calf', 'core']
+            elif weekday == 5:
+                pass
+            elif weekday == 6:
+                muscle_list = ['back']
+
+
+
+        # if users goal is general, 3 exercise days
+        # recommend quads, calf, hamstring mon
+        # recommend bicep, tricep  wed
+        # recommend core, back sat
+        elif self.user.goal == 'B':
+            if weekday == 0:
+                muscle_list = ['quadricep', 'calf', 'hamstring']
+            elif weekday == 1:
+                pass
+            elif weekday == 2:
+                muscle_list = ['bicep', 'tricep']
+            elif weekday == 3:
+                pass
+            elif weekday == 4:
+                muscle_list = ['back', 'core']
+            elif weekday == 5:
+                pass
+            elif weekday == 6:
+                pass
+        
+        return muscle_list
+
+    def make_recommendations(self):
+        # store the equipment that the user has
+        self.get_valid_equipment()
+
+        # get the list of muscles that have to be worked out (or empty list if none have to be worked out)
+        muscle_list = self.get_muscle_groups()
+        print("muscle list: ", muscle_list)
+        self.make_exercise_rec(muscle_list)
+        self.make_steps_rec()
         self.fill_difficulty()
         print(self.final_recs)
         print(self.get_sets_reps())
         print(self.final_recs)
+    
 
-"""
-    valid_equipment = get_valid_equipment(curr_user)
-    # if users goal is lose weight, less exercise days
-    # recommend legs, core mon
-    # recommend arms, back fri
-    if curr_user.goal == 'L':
-        if weekday == 0:
-            final_exercises = make_exercise_rec(df, ['quadricep', 'calf', 'hamstring', 'core'], valid_equipment)
-        elif weekday == 1:
-            pass
-        elif weekday == 2:
-            pass
-        elif weekday == 3:
-            pass
-        elif weekday == 4:
-            final_exercises = make_exercise_rec(df, ['bicep', 'tricep', 'back'], valid_equipment)
-        elif weekday == 5:
-            pass
-        elif weekday == 6:
-            pass
-
-
-    # if users goal is gain muscle, more exercise days
-    # recommend quads, hamstring mon
-    # recommend bicep, tricep wed
-    # recommend calf, core fri
-    # recommend back sun
-    elif curr_user.goal == 'G':
-        if weekday == 0:
-            final_exercises = make_exercise_rec(df, ['quadricep', 'hamstring'], valid_equipment)
-        elif weekday == 1:
-            pass
-        elif weekday == 2:
-            final_exercises = make_exercise_rec(df, ['bicep', 'tricep'], valid_equipment)
-        elif weekday == 3:
-            pass
-        elif weekday == 4:
-            final_exercises = make_exercise_rec(df, ['calf', 'core'], valid_equipment)
-        elif weekday == 5:
-            pass
-        elif weekday == 6:
-            final_exercises = make_exercise_rec(df, ['back'], valid_equipment)
 
 
 
-    # if users goal is general, 3 exercise days
-    # recommend quads, calf, hamstring mon
-    # recommend bicep, tricep  wed
-    # recommend core, back sat
-    elif curr_user.goal == 'F':
-        if weekday == 0:
-            final_exercises = make_exercise_rec(df, ['quadricep', 'calf', 'hamstring'], valid_equipment)
-        elif weekday == 1:
-            pass
-        elif weekday == 2:
-            final_exercises = make_exercise_rec(df, ['bicep', 'tricep'], valid_equipment)
-        elif weekday == 3:
-            pass
-        elif weekday == 4:
-            final_exercises = make_exercise_rec(df, ['back', 'core'], valid_equipment)
-        elif weekday == 5:
-            pass
-        elif weekday == 6:
-            pass
-
-
+"""
 
 def get_valid_equipment(user):
     # returns list of valid equipment based on what the user owns
@@ -333,7 +357,7 @@ def make_recommendations(curr_user):
     # recommend arms, back fri
     if curr_user.goal == 'L':
         if weekday == 0:
-            final_exercises = make_exercise_rec(df, ['quadricep', 'calf', 'hamstring', 'core'], valid_equipment)
+            final_exercises = make_exercise_rec(df, ['quadricep', 'calf', 'hamstring', 'core']
         elif weekday == 1:
             pass
         elif weekday == 2:
@@ -341,7 +365,7 @@ def make_recommendations(curr_user):
         elif weekday == 3:
             pass
         elif weekday == 4:
-            final_exercises = make_exercise_rec(df, ['bicep', 'tricep', 'back'], valid_equipment)
+            final_exercises = make_exercise_rec(df, ['bicep', 'tricep', 'back']
         elif weekday == 5:
             pass
         elif weekday == 6:
