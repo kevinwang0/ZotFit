@@ -179,8 +179,15 @@ class Member(models.Model):
     tricepExtensionDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5)
     chinupDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5)
 
+    # the latest exercises that the user was recommended
+    baseDate = date(1999, 4, 1)
+    latestExerciseRecDate = models.DateField(default = baseDate)
+    latestExerciseRecs = models.CharField(max_length=10000, default="")
+    latestStepsRecs = models.IntegerField(default=0)
+
     # assigns the django user id to the 'user_id' field for the member in the db
     objects = MemberManager()
+    
 
 class Workout(models.Model):
     #currentUser = get_user_model()
@@ -191,6 +198,7 @@ class Workout(models.Model):
     steps = models.IntegerField(blank=True, null=True, default=None)
     sets = models.IntegerField(blank=True, null=True, default=None)
     reps = models.IntegerField(blank=True, null=True, default=None)
+
 
 '''
 class User(models.Model):

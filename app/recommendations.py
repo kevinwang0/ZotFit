@@ -4,6 +4,7 @@ import pandas as pd
 import random
 from .models import MemberManager, Member
 from django.contrib.auth.models import User
+import json
 
 class Exercise:
     def __init__(self, name, sets, reps, video_link, eqp_list):
@@ -50,6 +51,9 @@ class Recommendation:
         # list of the recommended sets and reps, video links, and equipment for all recommended exercises
         self.final_recs = []
         self.step_rec = 0
+
+        # list of exercises gets stored to database
+        self.exerciseListToDb = []
 
     def get_valid_equipment(self):
         # returns list of valid equipment based on what the user owns
@@ -120,20 +124,28 @@ class Recommendation:
         # TODO: for current user
         # returns list of overall scores corresponding to the exercises they are recommended
         for exercise in self.exercise_recs_name:
-            self.overall_score.append(self.user.healthScore() * self.find_exercise_diff(exercise))
+            self.overall_score.append(self.user.healthScore() * float(self.find_exercise_diff(exercise)))
 
     def get_sets_reps(self):
         # returns dict of {id: {sets, reps}} based off the overall difficulty for
         # each exercise
         final_recs = set()
+
         for i in range(len(self.exercise_recs_id)):
-            for index, row in self.df.loc[(self.df['id'] == self.exercise_recs_id[i]) & (self.df['overallMin'] < self.overall_score[i]) & (
-                    self.overall_score[i] < self.df['overallMax'])].iterrows():
+            for index, row in self.df.loc[(self.df['id'] == self.exercise_recs_id[i]) & (self.df['overallMin'] <= self.overall_score[i]) & (
+                    self.overall_score[i] <= self.df['overallMax'])].iterrows():
+                print(final_recs)
+                print(row)
                 if row['exercise'] not in final_recs:
+                    print(row['exercise'])
                     optional_eqp = []
                     for eqp in self.user_eqp:
                         if row[eqp]:
                             optional_eqp.append(eqp)
+
+                    # adds the dictionary to a list that will be saved to the database storing the exercises recommended to the user
+                    tempDict = {"exercise": row['exercise'], "sets":row['sets'], "reps": row['reps'], "embed": row['video link'], "eqp_list": optional_eqp}
+                    self.exerciseListToDb.append(tempDict)
 
                     ex = Exercise(row['exercise'], row['sets'], row['reps'], row['video link'], optional_eqp)
                     final_recs.add(row['exercise'])
@@ -216,21 +228,46 @@ class Recommendation:
         
         return muscle_list
 
-    def make_recommendations(self):
-        # store the equipment that the user has
-        self.get_valid_equipment()
-        print("health: ", self.health_score, "stepDifficulty: ", self.user.stepDifficulty)
-        # get the list of muscles that have to be worked out (or empty list if none have to be worked out)
-        muscle_list = self.get_muscle_groups()
-        print("muscle list: ", muscle_list)
-        self.make_exercise_rec(muscle_list)
-        self.make_steps_rec()
-        if not muscle_list:
-            self.step_rec += 500
-        
-        print("steps: ", self.step_rec)
+    def ex_from_dict(self, exercise_dict):
 
-        self.fill_difficulty()
-        print(self.final_recs)
-        print(self.get_sets_reps())
-        print(self.final_recs)
+        for ex in exercise_dict:
+            e = Exercise(ex['exercise'], ex['sets'], ex['reps'], ex['embed'], ex['eqp_list'])
+            self.final_recs.append(e)
+
+
+    def make_recommendations(self):
+
+        # self.user.latestExerciseRecDate = datetime.date(2020,3,3)
+        if (self.user.latestExerciseRecDate == datetime.date.today()):
+            print(self.user.latestExerciseRecs)
+            exercise_dict = json.loads(self.user.latestExerciseRecs)
+            print('e:', exercise_dict)
+            self.ex_from_dict(exercise_dict)
+            self.step_rec = self.user.latestStepsRecs
+            print(self.final_recs)
+
+        
+
+        else:
+            # store the equipment that the user has
+            self.get_valid_equipment()
+            print("health: ", self.health_score, "stepDifficulty: ", self.user.stepDifficulty)
+            # get the list of muscles that have to be worked out (or empty list if none have to be worked out)
+            muscle_list = self.get_muscle_groups()
+            print("muscle list: ", muscle_list)
+            self.make_exercise_rec(muscle_list)
+            self.make_steps_rec()
+            if not muscle_list:
+                self.step_rec += 500
+            
+            print("steps: ", self.step_rec)
+
+            self.fill_difficulty()
+            print(self.final_recs)
+            print(self.get_sets_reps())
+            print(self.final_recs)
+
+            self.user.latestExerciseRecDate = datetime.date.today()
+            self.user.latestExerciseRecs = json.dumps(self.exerciseListToDb)
+            self.user.latestStepsRecs = self.step_rec
+            self.user.save()

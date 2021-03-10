@@ -44,7 +44,8 @@ class MemberForm(forms.ModelForm):
 					'supermanDifficulty', 'plankRowDifficulty', 'lowRowDifficulty', 'latPulldownDifficulty', 
 					'pullupDifficulty', 'bicepCurlDifficulty', 'deadliftDifficulty', 'hammerCurlDifficulty', 
 					'medicineBallSlamDifficulty', 'benchpressDifficulty', 'shoulderPressDifficulty', 
-					'tricepExtensionDifficulty', 'chinupDifficulty', 'bodyWeight')
+					'tricepExtensionDifficulty', 'chinupDifficulty', 'bodyWeight', 'stepDifficulty', 'latestExerciseRecDate', 
+					'latestExerciseRecs', 'latestStepsRecs')
 		labels = {
 			'barbell': ('I have access to barbells.'),
 			'benchpressEquipment': ('I have access to a bench press.'),
