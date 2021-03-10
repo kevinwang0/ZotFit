@@ -185,6 +185,9 @@ class Member(models.Model):
     latestExerciseRecs = models.CharField(max_length=10000, default="")
     latestStepsRecs = models.IntegerField(default=0)
 
+    # the last date that the user uploaded their data from phone/watch/etc
+    latestUploadDate = models.DateField(default=baseDate)
+
     # assigns the django user id to the 'user_id' field for the member in the db
     objects = MemberManager()
     
