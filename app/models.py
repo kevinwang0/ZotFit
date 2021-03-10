@@ -196,7 +196,7 @@ class Workout(models.Model):
     #currentUser = get_user_model()
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    workoutDate = models.DateTimeField()
+    workoutDate = models.DateField()
     workoutName = models.CharField(max_length=30)
     steps = models.IntegerField(blank=True, null=True, default=None)
     sets = models.IntegerField(blank=True, null=True, default=None)

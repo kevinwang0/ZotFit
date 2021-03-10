@@ -1,6 +1,8 @@
 import pandas as pd
 import xmltodict
 import os
+import datetime
+import pytz
 # from .models import MemberManager, Member, Workout
 # from django.contrib.auth.models import User
 
@@ -44,7 +46,9 @@ class StepData:
                                             format=format)
 
             # converting steps to integer
-            step_counts = df[df['@type'] == 'HKQuantityTypeIdentifierStepCount']
+            dt = datetime.datetime(2020, 12, 12, 5,5,5,5)
+            dt_aware = pytz.utc.localize(dt)
+            step_counts = df.loc[(df['@type'] == 'HKQuantityTypeIdentifierStepCount') & (df['@creationDate'] > dt_aware)]
             step_counts.loc[:, '@value'] = pd.to_numeric(
                 step_counts.loc[:, '@value'])
             df[df['@type'] == 'HKQuantityTypeIdentifierStepCount'] = step_counts
@@ -54,8 +58,18 @@ class StepData:
             steps_by_day = step_counts_by_creation['@value'].resample('D').sum()
 
 
-            print(steps_by_day[0].index)
+            dt2 = dt = datetime.datetime(2021, 1, 1, 5,5,5,5)
+            dt_aware2 = pytz.utc.localize(dt)
 
+            # get the rows where the creation date is greater than the latest upload date
+            # for each of those, get the index (date) and the value (steps) and store them in a workout object
+            # put the list of workout objects in the database
+
+            for index, row in steps_by_day.items():
+                print("Date: ", index, "Steps", row)
+            print(steps_by_day[steps_by_day.index > dt_aware2])
+
+            
             # steps_by_day.loc[steps_by_day[]]
 
 s = StepData()
