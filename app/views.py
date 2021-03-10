@@ -23,11 +23,12 @@ class ExampleRecommendation:
 class HomeView(LoginRequiredMixin, TemplateView):
 	template_name = "home.html"
 	
-	# TODO: login required, if user has not provided info, redirect to get info
+	# TODO: if user has not provided info, redirect to getinfo
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		# TODO: pull this weeks steps from database
+		# ordered by most recent day last
 		context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
 		context['recommendations'] = [
 			ExampleRecommendation(),
