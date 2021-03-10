@@ -1,6 +1,27 @@
 import pandas as pd
 import xmltodict
 import os
+from .models import MemberManager, Member, Workout
+from django.contrib.auth.models import User
+
+class StepData:
+    def __init__(self, request):
+        if request.user.is_authenticated:
+            self.user = Member.objects.get(user=request.user.id)
+            print("AUTHENTICATED")
+        else:
+            print("UNAUTHENTICATED")
+
+    def get_recent_steps(self, num):
+        output = []
+        for thing in Workout.objects.filter(user=self.user).filter(workoutName='steps').latest('workoutDate'):
+            # do stuff with thing
+            pass
+
+    def save_step_data(self):
+        # save steps to database, kinda similar to function previously defined below
+        pass
+    
 
 
 def a(username):
@@ -62,24 +83,6 @@ def a(username):
     heart_rate_day_avg = heart_rate_by_creation['@value'].resample('D').mean()
     print(heart_rate_by_creation)
     print(heart_rate_day_avg)
-
-    """
-    # getting rest heart rate by day
-    rest_heart_rate = df[df['@type'] == 'HKQuantityTypeIdentifierRestingHeartRate']
-    step_counts_by_creation = step_counts.groupby('@creationDate').sum()
-    steps_by_day = step_counts_by_creation['@value'].resample('D').sum()
-    print(steps_by_day)
-
-    # getting walking heart rate by day
-    walking_heart_rate = df[df['@type'] == 'HKQuantityTypeIdentifierWalkingHeartRateAverage']
-    step_counts_by_creation = step_counts.groupby('@creationDate').sum()
-    steps_by_day = step_counts_by_creation['@value'].resample('D').sum()
-    print(steps_by_day)
-    """
-
-
-
-
 
     print()
     print(df['@type'].unique())
