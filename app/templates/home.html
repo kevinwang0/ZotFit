@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load humanize %}
+
 {% block title %}Home{% endblock %}
 
 {% block head %}
@@ -8,13 +10,15 @@
 {% endblock %}
 
 {% block navbar %}
+    <!-- dev, should be removed in demo -->
+    <small class="text-muted">user: {{user.username}}</small>
 	<a href="{% url 'logout' %}" class="btn btn-dark btn-sm">Logout</a>
 {% endblock %}
 
 {% block content %}
 	<div class="container-fluid" style="background-image: linear-gradient(#daebff, #ffffff);">
         <div class="container py-5">
-            <!-- <h2 class="pt-5 py-3" style="font-weight: bold;">Hi, {{ user.first_name }}</h2> -->
+            <!-- <h2 class="py-3" style="font-weight: bold;">Hi, {{ user.first_name }}</h2> -->
             <h2 style="font-weight: bold;">Charts</h2>
             <div class="card my-4 mx-auto shadow">
                 <div class="card-body m-2">
@@ -30,29 +34,31 @@
                         <iframe src="{{ workout.embed }}" allowfullscreen></iframe>
                     </div>
                     <div class="card-body">
-                    <h4 class="card-title" style="font-weight: bold;">{{ workout.name }} ({{ workout.combination }})</h4>
-                    <p class="card-text"><small class="text-muted">Requires: {{ workout.requires }}</small></p>
+                        <h4 class="card-title" style="font-weight: bold;">{{ workout.name }} ({{ workout.combination }})</h4>
+                        <p class="card-text"><small class="text-muted">Requires: {{ workout.requires }}</small></p>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-            <div class="text-center">
-                <a href="{% url 'workout' %}" class="btn btn-primary btn-lg">Finish workout</a>
+            <div class="card my-4 rounded-0 shadow">
+                <div class="card-body">
+                    <h4 class="card-title rounded-0" style="font-weight: bold;">Cardio</h4>
+                    <h5 class="card-text text-muted">Take {{ step_rec|intcomma }} steps.</h5>
+                </div>
+            </div>
+            <div class="text-center my-4">
+                <!-- ugly, needs to become one thing -->
+                <a href="{% url 'steps' %}" class="btn btn-primary btn-lg mx-2">Record steps</a>
+                <a href="{% url 'workout' %}" class="btn btn-primary btn-lg mx-2">Finish workout</a>
             </div>
         </div>
 	</div>
     {{ steps|json_script:"steps-data" }}
+    {{ labels|json_script:"labels-data" }}
     <script>
-    // get labels for past 7 days
-    let week_days = [];
-    for (let i = 0; i < 7; ++i) {
-        var d = new Date();
-        d.setDate(d.getDate() - i);
-        week_days.push(d.toLocaleDateString('en-US', { weekday: 'long' }));
-    }
-    week_days = week_days.reverse(); // we want labels in reverse order (most recent day last)
-    // retrieve steps from template
-    const stepsData = JSON.parse(document.getElementById('steps-data').textContent);
+    // retrieve steps and dates from template
+    const steps = JSON.parse(document.getElementById('steps-data').textContent);
+    const dateLabels = JSON.parse(document.getElementById('labels-data').textContent);
 
     // create chart
     const ctx = document.getElementById('my-chart');
@@ -60,10 +66,10 @@
         type: 'line',
 
         data: {
-            labels: week_days,
+            labels: dateLabels,
             datasets: [{
                 label: 'Daily Steps',
-                data: stepsData,
+                data: steps,
                 borderColor: 'rgba(51, 108, 251, 1)',
                 // gradient possible but difficult to make responsive
                 backgroundColor: 'rgba(51, 108, 251, .1)',

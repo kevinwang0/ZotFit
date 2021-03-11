@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from app.views import HomeView, RegisterView, GetInfoView, WorkoutView
+from app.views import HomeView, RegisterView, GetInfoView, StrengthWorkoutView, StepWorkoutView
 from django.contrib.auth import views as auth_views
 
 # for use with auth LoginView
@@ -17,6 +17,6 @@ urlpatterns = [
     path('register', RegisterView.as_view(), name='register'),
     path('login', auth_views.LoginView.as_view(template_name='form.html', extra_context=LOGIN_CONTEXT), name='login'),
     path('logout', auth_views.LogoutView.as_view(), name='logout'),
-    path('thanks', views.thanks, name='thanks'),
-    path('workout', WorkoutView.as_view(), name='workout'),
+    path('workout', StrengthWorkoutView.as_view(), name='workout'),
+    path('steps', StepWorkoutView.as_view(), name='steps'),
 ]

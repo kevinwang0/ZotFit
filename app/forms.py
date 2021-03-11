@@ -63,7 +63,32 @@ class MemberForm(forms.ModelForm):
 			'goal': forms.RadioSelect,
 		}
 
-class WorkoutForm(forms.ModelForm):
+# class WorkoutForm(forms.ModelForm):
+# 	class Meta:
+# 		model = Workout
+# 		exclude = ('user',)
+# 		widgets = {
+# 			'workoutDate' : forms.DateInput({'type': 'date'}),
+# 		}
+# 		labels = {
+# 			'workoutDifficulty' : 'How difficult was the workout?',
+# 			'workoutPreference' : 'Did you like the exercise?'
+# 		}
+# 	field_order = ['workoutDate', 'workoutName', 'steps', 'sets', 'reps']
+
+class StepWorkoutForm(forms.ModelForm):
+	class Meta:
+		model = Workout
+		exclude = ('user', 'workoutPreference', 'sets', 'reps', 'workoutName')
+		widgets = {
+			'workoutDate' : forms.DateInput({'type': 'date'}),
+		}
+		labels = {
+			'workoutDifficulty' : 'How difficult were the assigned steps?'
+		}
+	field_order = ['workoutDate', 'sets']
+
+class StrengthWorkoutForm(forms.ModelForm):
 	class Meta:
 		model = Workout
 		exclude = ('user',)
@@ -75,36 +100,3 @@ class WorkoutForm(forms.ModelForm):
 			'workoutPreference' : 'Did you like the exercise?'
 		}
 	field_order = ['workoutDate', 'workoutName', 'steps', 'sets', 'reps']
-
-
-# These are the two different forms for steps/strength exercise submissions.
-# I've left the default submission with both of them combined to show how it works
-# and so you can change the submission page/add urls to your preference.
-
-'''
-class StepWorkoutForm(forms.ModelForm):
-	class Meta:
-		model = Workout
-		exclude = ('user', 'workoutPreference', 'sets', 'reps', 'workoutName')
-		widgets = {
-			'workoutDate' : forms.widgets.SelectDateWidget()
-		}
-		labels = {
-			'workoutDifficulty' : 'How difficult was the workout?',
-		}
-	field_order = ['workoutDate', 'sets']
-
-class StrengthWorkoutForm(forms.ModelForm):
-	class Meta:
-		model = Workout
-		exclude = ('user',)
-		widgets = {
-			'workoutDate' : forms.widgets.SelectDateWidget()
-		}
-		labels = {
-			'workoutDifficulty' : 'How difficult was the workout?',
-			'workoutPreference' : 'Did you like the exercise?'
-		}
-	field_order = ['workoutDate', 'workoutName', 'steps', 'sets', 'reps']
-'''
-

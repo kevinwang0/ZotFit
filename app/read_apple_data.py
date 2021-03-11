@@ -15,21 +15,6 @@ class StepData:
         else:
             print("UNAUTHENTICATED")
 
-    def get_recent_steps(self, num):
-        recent_steps = []
-
-        # get the steps that happened on the workoutDate
-        print(Workout.objects.filter(user=self.request.user).filter(workoutName='steps').order_by('-workoutDate'))
-        for workout in Workout.objects.filter(user=self.request.user).filter(workoutName='steps').order_by('-workoutDate'):
-            print(workout.workoutDate, workout.steps)
-            if len(recent_steps) > num:
-                break
-            recent_steps.append(workout.steps)
-
-        # reverse recent_steps to get the correct ordering
-        # TODO: steps can be reversed by hypen in order_by, check order when working
-        return recent_steps
-
     def save_step_data(self):
         input_path = '/uploaded_files/user_' + str(self.user.user_id) + '/export.xml'
         try: 
