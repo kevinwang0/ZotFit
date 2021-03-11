@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load crispy_forms_tags %}
+
 {% block navbar %}
 	<button type="button" class="btn btn-dark btn-sm" disabled>{{ step }}</button>
 {% endblock %}
@@ -10,7 +12,7 @@
 			<form class="card-body m-2" method="POST">
 				{% csrf_token %}
 				<h3 class="card-title">{% block title %}{{ title }}{% endblock %}</h3>
-				{{ form.as_p }}
+				{{ form|crispy }}
 				<div class="text-center">
 					<button type="submit" class="btn btn-primary btn-lg">{{ button_title }}</button>
 				</div>
