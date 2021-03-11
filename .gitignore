@@ -144,8 +144,5 @@ cython_debug/
 # DS_Store
 .DS_Store
 
-# migrations
-migrations/*
-
 # uploaded files
 uploaded_files/*
