@@ -3,9 +3,9 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
-from datetime import date
-
-today = date.today()
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from datetime import date, datetime
 
 # Create your models here.
 
@@ -15,13 +15,20 @@ class MemberManager(models.Manager):
         member = self.create(user=user, height=height, weight=weight, birth=birth)
         return member
 
+def sane_dates(value):
+    if value > timezone.now().date():
+        raise ValidationError("Date cannot be in the future.")
+    elif value < date(1900, 1, 1):
+        raise ValidationError("Date too far in the past.")
+
 class Member(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     height = models.PositiveSmallIntegerField(validators=[MinValueValidator(36)]) # in inches
     weight = models.PositiveSmallIntegerField(validators=[MinValueValidator(50)]) # in lbs
-    birth = models.DateField()
+    birth = models.DateField(validators=[sane_dates])
 
     def ageScore(self):
+        today = timezone.now().date()
         age = today.year - self.birth.year - ((today.month, today.day) < (self.birth.month, self.birth.day))
         if age <= 8:
             return 1
@@ -181,20 +188,19 @@ class Member(models.Model):
 
     # the latest exercises that the user was recommended
     baseDate = date(1999, 4, 1)
-    latestExerciseRecDate = models.DateField(default = baseDate)
+    latestExerciseRecDate = models.DateField(default=baseDate, validators=[sane_dates])
     latestExerciseRecs = models.CharField(max_length=10000, default="")
     latestStepsRecs = models.IntegerField(default=0)
 
     # the last date that the user uploaded their data from phone/watch/etc
-    latestUploadDate = models.DateField(default=baseDate)
+    latestUploadDate = models.DateField(default=baseDate, validators=[sane_dates])
 
     # assigns the django user id to the 'user_id' field for the member in the db
     objects = MemberManager()
 
 class Workout(models.Model):
-
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    workoutDate = models.DateField()
+    workoutDate = models.DateField(default=timezone.now, validators=[sane_dates])
     steps = models.IntegerField(blank=True, null=True, default=None)
     sets = models.IntegerField(blank=True, null=True, default=None)
     reps = models.IntegerField(blank=True, null=True, default=None)

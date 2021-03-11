@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Member, Workout
-import datetime
 
 class RegisterForm(UserCreationForm):
 	first_name = forms.CharField(label = "First name", max_length=30)
@@ -59,7 +58,7 @@ class MemberForm(forms.ModelForm):
 			'height': ('In inches'),
 		}
 		widgets = {
-			'birth' : forms.widgets.SelectDateWidget(years=range(1900, 2021)),
+			'birth' : forms.DateInput({'type': 'date'}),
 			'gender': forms.RadioSelect,
 			'goal': forms.RadioSelect,
 		}
@@ -69,7 +68,7 @@ class WorkoutForm(forms.ModelForm):
 		model = Workout
 		exclude = ('user',)
 		widgets = {
-			'workoutDate' : forms.widgets.SelectDateWidget()
+			'workoutDate' : forms.DateInput({'type': 'date'}),
 		}
 		labels = {
 			'workoutDifficulty' : 'How difficult was the workout?',
