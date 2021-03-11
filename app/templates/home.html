@@ -36,17 +36,21 @@
                 </div>
                 {% endfor %}
             </div>
+            <div class="text-center">
+                <a href="{% url 'workout' %}" class="btn btn-primary btn-lg">Finish workout</a>
+            </div>
         </div>
 	</div>
     {{ steps|json_script:"steps-data" }}
     <script>
     // get labels for past 7 days
-    const week_days = [];
+    let week_days = [];
     for (let i = 0; i < 7; ++i) {
         var d = new Date();
         d.setDate(d.getDate() - i);
-        week_days.push(d.toLocaleDateString());
+        week_days.push(d.toLocaleDateString('en-US', { weekday: 'long' }));
     }
+    week_days = week_days.reverse(); // we want labels in reverse order (most recent day last)
     // retrieve steps from template
     const stepsData = JSON.parse(document.getElementById('steps-data').textContent);
 
@@ -82,7 +86,9 @@
             scales: {
                 x: {
                     // hide x axis scale
-                    display: false
+                    gridLines: {
+                        display: false
+                    }
                 },
                 y: {
                     beginAtZero: true,

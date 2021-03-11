@@ -24,15 +24,17 @@ class ExampleRecommendation:
 
 class HomeView(LoginRequiredMixin, TemplateView):
 	template_name = "home.html"
-
-	# TODO: login required, if user has not provided info, redirect to get info
+	
+	# TODO: if user has not provided info, redirect to getinfo
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		# TODO: pull this weeks steps from database
+		# should be ordered by most recent day last
 		s = read_apple_data.StepData(self.request)
 		s.save_step_data()
 		s.get_recent_steps(7)
+		#context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
 		context['steps'] = s.recent_steps
 		
 		# access the user object that is stored in the database
