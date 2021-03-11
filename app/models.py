@@ -190,7 +190,6 @@ class Member(models.Model):
 
     # assigns the django user id to the 'user_id' field for the member in the db
     objects = MemberManager()
-    
 
 class Workout(models.Model):
     #currentUser = get_user_model()
