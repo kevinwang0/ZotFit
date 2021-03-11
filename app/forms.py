@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Member, Workout
+import datetime
 
 class RegisterForm(UserCreationForm):
 	first_name = forms.CharField(label = "First name", max_length=30)
@@ -58,6 +59,7 @@ class MemberForm(forms.ModelForm):
 			'height': ('In inches'),
 		}
 		widgets = {
+			'birth' : forms.widgets.SelectDateWidget(years=range(1900, 2021)),
 			'gender': forms.RadioSelect,
 			'goal': forms.RadioSelect,
 		}
@@ -66,7 +68,44 @@ class WorkoutForm(forms.ModelForm):
 	class Meta:
 		model = Workout
 		exclude = ('user',)
-		labels = {
-			'workoutDate' : 'Workout Date',
-			'workoutName' : 'Workout Name',
+		widgets = {
+			'workoutDate' : forms.widgets.SelectDateWidget()
 		}
+		labels = {
+			'workoutDifficulty' : 'How difficult was the workout?',
+			'workoutPreference' : 'Did you like the exercise?'
+		}
+	field_order = ['workoutDate', 'workoutName', 'steps', 'sets', 'reps']
+
+
+# These are the two different forms for steps/strength exercise submissions.
+# I've left the default submission with both of them combined to show how it works
+# and so you can change the submission page/add urls to your preference.
+
+'''
+class StepWorkoutForm(forms.ModelForm):
+	class Meta:
+		model = Workout
+		exclude = ('user', 'workoutPreference', 'sets', 'reps', 'workoutName')
+		widgets = {
+			'workoutDate' : forms.widgets.SelectDateWidget()
+		}
+		labels = {
+			'workoutDifficulty' : 'How difficult was the workout?',
+		}
+	field_order = ['workoutDate', 'sets']
+
+class StrengthWorkoutForm(forms.ModelForm):
+	class Meta:
+		model = Workout
+		exclude = ('user',)
+		widgets = {
+			'workoutDate' : forms.widgets.SelectDateWidget()
+		}
+		labels = {
+			'workoutDifficulty' : 'How difficult was the workout?',
+			'workoutPreference' : 'Did you like the exercise?'
+		}
+	field_order = ['workoutDate', 'workoutName', 'steps', 'sets', 'reps']
+'''
+
