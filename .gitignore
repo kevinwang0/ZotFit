@@ -140,3 +140,9 @@ cython_debug/
 # IntelliJ
 .idea
 *.iws
+
+# DS_Store
+.DS_Store
+
+# uploaded files
+uploaded_files/*

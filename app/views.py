@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.forms import AuthenticationForm
 from . import forms
+from . import recommendations
 
 # Create your views here.
 def index(request):
@@ -30,11 +31,13 @@ class HomeView(LoginRequiredMixin, TemplateView):
 		# TODO: pull this weeks steps from database
 		# ordered by most recent day last
 		context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
-		context['recommendations'] = [
-			ExampleRecommendation(),
-			ExampleRecommendation(),
-			ExampleRecommendation(),
-		]
+		
+		# access the user object that is stored in the database
+		# note that the django user id and the member user id stored in db are different
+		r = recommendations.Recommendation(self.request)
+		
+		r.make_recommendations()
+		context['recommendations'] = r.final_recs
 		return context
 
 class RegisterView(FormView):
