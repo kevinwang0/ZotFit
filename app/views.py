@@ -8,8 +8,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.forms import AuthenticationForm
 from . import forms
-from .models import Member
-import decimal
+from . import recommendations
+from . import read_apple_data
 
 # Create your views here.
 def index(request):
@@ -30,13 +30,20 @@ class HomeView(LoginRequiredMixin, TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		# TODO: pull this weeks steps from database
-		# ordered by most recent day last
-		context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
-		context['recommendations'] = [
-			ExampleRecommendation(),
-			ExampleRecommendation(),
-			ExampleRecommendation(),
-		]
+		# should be ordered by most recent day last
+		s = read_apple_data.StepData(self.request)
+		s.save_step_data()
+		s.get_recent_steps(7)
+		#context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
+		context['steps'] = s.recent_steps
+		
+		# access the user object that is stored in the database
+		# note that the django user id and the member user id stored in db are different
+		r = recommendations.Recommendation(self.request)
+		
+		r.make_recommendations()
+		context['recommendations'] = r.final_recs
+		context['steps recommendation'] = r.step_rec
 		return context
 
 class RegisterView(FormView):
@@ -86,36 +93,6 @@ class WorkoutView(LoginRequiredMixin, FormView):
 
 	def form_valid(self, form):
 		form.instance.user_id = self.request.user.id
-		currentMember = Member.objects.get(id=form.instance.user_id)
-
-		# get the exercise name and turn it into the corresponding attributes
-		changeDifficulty = form.cleaned_data['workoutName'] + 'Difficulty'
-		changePreference = form.cleaned_data['workoutName']
-
-		# use getattr() to access the existing difficulty/preference values
-		currentDifficulty = getattr(currentMember, changeDifficulty)
-		currentPreference = getattr(currentMember, changePreference)
-
-		# Now, we adjust the difficulty/preference values accordingly
-		if form.cleaned_data['workoutDifficulty'] == None: # just right
-			pass
-
-		elif form.cleaned_data['workoutDifficulty'] == True: # too difficult
-			setattr(currentMember, changeDifficulty, currentDifficulty - decimal.Decimal('0.2'))
-
-		else: # too easy
-			setattr(currentMember, changeDifficulty, currentDifficulty + decimal.Decimal('0.2'))
-
-		if form.cleaned_data['workoutPreference'] == None: # neutral
-			pass
-
-		elif form.cleaned_data['workoutPreference'] == True: # liked it
-			setattr(currentMember, changePreference, currentPreference - decimal.Decimal('0.2'))
-
-		else: # hated it
-			setattr(currentMember, changePreference, currentPreference + decimal.Decimal('0.2'))
-
-		currentMember.save()
 		form.save()
 		return super(WorkoutView, self).form_valid(form)
 
@@ -127,92 +104,3 @@ def handle_uploaded_file(f):
 	with open('uploaded_files/' + str(f), 'wb+') as destination:
 		for chunk in f.chunks():
 			destination.write(chunk)
-
-
-# These are the two different forms for steps/strength exercise submissions.
-# I've left the default submission with both of them combined to show how it works
-# and so you can change the submission page/add urls to your preference.
-
-'''
-class StepWorkoutView(LoginRequiredMixin, FormView):
-	template_name = 'form.html'
-	form_class = forms.WorkoutForm
-	success_url = reverse_lazy('home')
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		context['title'] = 'Submit Workout Data'
-		context['button_title'] = 'Submit'
-		return context
-
-	def form_valid(self, form):
-		form.instance.user_id = self.request.user.id
-		currentMember = Member.objects.get(id=form.instance.user_id)
-
-		# (Note) there is no 'stepPreference' attribute, so only the
-		# difficulty attribute is changed
-		changeDifficulty = 'stepDifficulty'
-
-		# use getattr() to access the existing difficulty/preference values
-		currentDifficulty = getattr(currentMember, changeDifficulty)
-
-		# Now, we adjust the difficulty/preference values accordingly
-		if form.cleaned_data['workoutDifficulty'] == None: # just right
-			pass
-
-		elif form.cleaned_data['workoutDifficulty'] == True: # too difficult
-			setattr(currentMember, changeDifficulty, currentDifficulty - decimal.Decimal('0.2'))
-
-		else: # too easy
-			setattr(currentMember, changeDifficulty, currentDifficulty + decimal.Decimal('0.2'))
-
-		currentMember.save()
-		form.save()
-		return super(StepWorkoutView, self).form_valid(form)
-
-class StrengthWorkoutView(LoginRequiredMixin, FormView):
-	template_name = 'form.html'
-	form_class = forms.WorkoutForm
-	success_url = reverse_lazy('home')
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		context['title'] = 'Submit Workout Data'
-		context['button_title'] = 'Submit'
-		return context
-
-	def form_valid(self, form):
-		form.instance.user_id = self.request.user.id
-		currentMember = Member.objects.get(id=form.instance.user_id)
-
-		# get the exercise name and turn it into the corresponding attributes
-		changeDifficulty = form.cleaned_data['workoutName'] + 'Difficulty'
-		changePreference = form.cleaned_data['workoutName']
-
-		# use getattr() to access the existing difficulty/preference values
-		currentDifficulty = getattr(currentMember, changeDifficulty)
-		currentPreference = getattr(currentMember, changePreference)
-
-		# Now, we adjust the difficulty/preference values accordingly
-		if form.cleaned_data['workoutDifficulty'] == None: # just right
-			pass
-
-		elif form.cleaned_data['workoutDifficulty'] == True: # too difficult
-			setattr(currentMember, changeDifficulty, currentDifficulty - decimal.Decimal('0.2'))
-
-		else: # too easy
-			setattr(currentMember, changeDifficulty, currentDifficulty + decimal.Decimal('0.2'))
-
-		if form.cleaned_data['workoutPreference'] == None: # neutral
-			pass
-
-		elif form.cleaned_data['workoutPreference'] == True: # liked it
-			setattr(currentMember, changePreference, currentPreference - decimal.Decimal('0.2'))
-
-		else: # hated it
-			setattr(currentMember, changePreference, currentPreference + decimal.Decimal('0.2'))
-
-		currentMember.save()
-		form.save()
-		return super(StrengthWorkoutView, self).form_valid(form)
-		'''
