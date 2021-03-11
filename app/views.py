@@ -9,6 +9,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.forms import AuthenticationForm
 from . import forms
 from . import recommendations
+from . import read_apple_data
 
 # Create your views here.
 def index(request):
@@ -29,8 +30,12 @@ class HomeView(LoginRequiredMixin, TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		# TODO: pull this weeks steps from database
-		# ordered by most recent day last
-		context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
+		# should be ordered by most recent day last
+		s = read_apple_data.StepData(self.request)
+		s.save_step_data()
+		s.get_recent_steps(7)
+		#context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
+		context['steps'] = s.recent_steps
 		
 		# access the user object that is stored in the database
 		# note that the django user id and the member user id stored in db are different
@@ -38,6 +43,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
 		
 		r.make_recommendations()
 		context['recommendations'] = r.final_recs
+		context['steps recommendation'] = r.step_rec
 		return context
 
 class RegisterView(FormView):

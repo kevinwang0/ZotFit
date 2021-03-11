@@ -7,8 +7,8 @@ from .models import MemberManager, Member, Workout
 from django.contrib.auth.models import User
 
 class StepData:
-    # PUT REQUEST BACK IN HERE AND UNCOMMNET IT
     def __init__(self, request):
+        self.request = request
         if request.user.is_authenticated:
             self.user = Member.objects.get(user=request.user.id)
             print("AUTHENTICATED")
@@ -19,16 +19,19 @@ class StepData:
     def get_recent_steps(self, num):
         self.recent_steps = []
         # get the steps that happened on the workoutDate
-        for workout in Workout.objects.filter(user=self.user).filter(workoutName='steps').latest('workoutDate'):
+        print(Workout.objects.filter(user=self.request.user).filter(workoutName='steps').order_by('-workoutDate'))
+        for workout in Workout.objects.filter(user=self.request.user).filter(workoutName='steps').order_by('-workoutDate'):
+            print(workout.workoutDate, workout.steps)
             if len(self.recent_steps) > num:
                 break
             self.recent_steps.append(workout.steps)
-        # might need to reverse recent_steps
+        # reverse recent_steps to get the correct ordering
+        self.recent_steps = reversed(self.recent_steps)
 
     def save_step_data(self):
         
         # input_path = '../uploaded_files/apple_health_export_brian_he/export.xml'
-        input_path = '/uploaded_files/apple_health_export_brian_he/export.xml'
+        input_path = './uploaded_files/apple_health_export_brian_he/export.xml'
         # input_path = '/uploaded_files/apple_health_export_' + username + '/export.xml'
         with open(input_path, 'r') as xml_file:
             # converting xml to pandas dataframe
@@ -49,8 +52,10 @@ class StepData:
             # converting steps to integer
             # dt = datetime.datetime(2020, 12, 12, 5,5,5,5)
             dt = self.user.latestUploadDate
-            dt_aware = pytz.utc.localize(dt)
-            step_counts = df.loc[(df['@type'] == 'HKQuantityTypeIdentifierStepCount') & (df['@creationDate'] > dt_aware)]
+            print(dt)
+            dt = datetime.datetime(dt.year, dt.month, dt.day)
+            dt = pytz.utc.localize(dt)
+            step_counts = df.loc[(df['@type'] == 'HKQuantityTypeIdentifierStepCount') & (df['@creationDate'] > dt)]
             step_counts.loc[:, '@value'] = pd.to_numeric(step_counts.loc[:, '@value'])
             df[df['@type'] == 'HKQuantityTypeIdentifierStepCount'] = step_counts
     
@@ -71,13 +76,15 @@ class StepData:
 
             iterrows = steps_by_day.items()
             save_to_db = [
-                Workout(user = self.user,
+                Workout(user = self.request.user,
+                        workoutName = "steps",
                         workoutDate = index.date(),
                         steps = value)
                 for index, value in iterrows
             ]
+            self.user.latestUploadDate = datetime.date.today()
             Workout.objects.bulk_create(save_to_db)
-
+            self.user.save()
             
             # steps_by_day.loc[steps_by_day[]]
 
