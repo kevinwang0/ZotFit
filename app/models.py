@@ -81,7 +81,7 @@ class Member(models.Model):
 
     bodyWeight = models.BooleanField(default=True)
 
-    # workout preferences (0.0 - 1.0)
+    # workout preferences (0.0 - 10.0)
     squat = models.DecimalField(max_digits=2, decimal_places=1, default=5)
     lunge = models.DecimalField(max_digits=2, decimal_places=1, default=5)
     reverseLunge = models.DecimalField(max_digits=2, decimal_places=1, default=5)
@@ -129,7 +129,7 @@ class Member(models.Model):
     tricepExtension = models.DecimalField(max_digits=2, decimal_places=1, default=5)
     chinup = models.DecimalField(max_digits=2, decimal_places=1, default=5)
 
-    # workout intensity levels (0.0 - 1.0)
+    # workout intensity levels (0.0 - 10.0)
     stepDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5)
     
     squatDifficulty = models.DecimalField(max_digits=2, decimal_places=1, default=5)
