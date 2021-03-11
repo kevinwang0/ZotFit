@@ -14,79 +14,81 @@ class StepData:
             print("AUTHENTICATED")
         else:
             print("UNAUTHENTICATED")
-        self.recent_steps = []
 
     def get_recent_steps(self, num):
-        self.recent_steps = []
+        recent_steps = []
+
         # get the steps that happened on the workoutDate
         print(Workout.objects.filter(user=self.request.user).filter(workoutName='steps').order_by('-workoutDate'))
         for workout in Workout.objects.filter(user=self.request.user).filter(workoutName='steps').order_by('-workoutDate'):
             print(workout.workoutDate, workout.steps)
-            if len(self.recent_steps) > num:
+            if len(recent_steps) > num:
                 break
-            self.recent_steps.append(workout.steps)
+            recent_steps.append(workout.steps)
+
         # reverse recent_steps to get the correct ordering
-        self.recent_steps = reversed(self.recent_steps)
+        # TODO: steps can be reversed by hypen in order_by, check order when working
+        return recent_steps
 
     def save_step_data(self):
-        
-        # input_path = '../uploaded_files/apple_health_export_brian_he/export.xml'
-        input_path = './uploaded_files/apple_health_export_brian_he/export.xml'
-        # input_path = '/uploaded_files/apple_health_export_' + username + '/export.xml'
-        with open(input_path, 'r') as xml_file:
-            # converting xml to pandas dataframe
-            input_data = xmltodict.parse(xml_file.read())
-            records_list = input_data['HealthData']['Record']
-            df = pd.DataFrame(records_list)
-            print(df.columns)
+        input_path = '/uploaded_files/user_' + str(self.user.user_id) + '/export.xml'
+        try: 
+            with open(input_path, 'r') as xml_file:
+                # converting xml to pandas dataframe
+                input_data = xmltodict.parse(xml_file.read())
+                records_list = input_data['HealthData']['Record']
+                df = pd.DataFrame(records_list)
+                print(df.columns)
 
-            # converting to pandas datetime object
-            format = '%Y-%m-%d %H:%M:%S %z'
-            df['@creationDate'] = pd.to_datetime(df['@creationDate'],
+                # converting to pandas datetime object
+                format = '%Y-%m-%d %H:%M:%S %z'
+                df['@creationDate'] = pd.to_datetime(df['@creationDate'],
+                                                    format=format)
+                df['@startDate'] = pd.to_datetime(df['@startDate'],
                                                 format=format)
-            df['@startDate'] = pd.to_datetime(df['@startDate'],
-                                            format=format)
-            df['@endDate'] = pd.to_datetime(df['@endDate'],
-                                            format=format)
+                df['@endDate'] = pd.to_datetime(df['@endDate'],
+                                                format=format)
 
-            # converting steps to integer
-            # dt = datetime.datetime(2020, 12, 12, 5,5,5,5)
-            dt = self.user.latestUploadDate
-            print(dt)
-            dt = datetime.datetime(dt.year, dt.month, dt.day)
-            dt = pytz.utc.localize(dt)
-            step_counts = df.loc[(df['@type'] == 'HKQuantityTypeIdentifierStepCount') & (df['@creationDate'] > dt)]
-            step_counts.loc[:, '@value'] = pd.to_numeric(step_counts.loc[:, '@value'])
-            df[df['@type'] == 'HKQuantityTypeIdentifierStepCount'] = step_counts
-    
-            # getting steps by day
-            step_counts_by_creation = step_counts.groupby('@creationDate').sum()
-            steps_by_day = step_counts_by_creation['@value'].resample('D').sum()
+                # converting steps to integer
+                # dt = datetime.datetime(2020, 12, 12, 5,5,5,5)
+                dt = self.user.latestUploadDate
+                print(dt)
+                dt = datetime.datetime(dt.year, dt.month, dt.day)
+                dt = pytz.utc.localize(dt)
+                step_counts = df.loc[(df['@type'] == 'HKQuantityTypeIdentifierStepCount') & (df['@creationDate'] > dt)]
+                step_counts.loc[:, '@value'] = pd.to_numeric(step_counts.loc[:, '@value'])
+                df[df['@type'] == 'HKQuantityTypeIdentifierStepCount'] = step_counts
+        
+                # getting steps by day
+                step_counts_by_creation = step_counts.groupby('@creationDate').sum()
+                steps_by_day = step_counts_by_creation['@value'].resample('D').sum()
 
 
-            # dt2 = dt = datetime.datetime(2021, 1, 1, 5,5,5,5)
-            # dt_aware2 = pytz.utc.localize(dt)
-            # for index, row in steps_by_day.items():
-            #     print("Date: ", index, "Steps", row)
-            # print(steps_by_day[steps_by_day.index > dt_aware2])
+                # dt2 = dt = datetime.datetime(2021, 1, 1, 5,5,5,5)
+                # dt_aware2 = pytz.utc.localize(dt)
+                # for index, row in steps_by_day.items():
+                #     print("Date: ", index, "Steps", row)
+                # print(steps_by_day[steps_by_day.index > dt_aware2])
 
-            # get the rows where the creation date is greater than the latest upload date
-            # for each of those, get the index (date) and the value (steps) and store them in a workout object
-            # put the list of workout objects in the database
+                # get the rows where the creation date is greater than the latest upload date
+                # for each of those, get the index (date) and the value (steps) and store them in a workout object
+                # put the list of workout objects in the database
 
-            iterrows = steps_by_day.items()
-            save_to_db = [
-                Workout(user = self.request.user,
-                        workoutName = "steps",
-                        workoutDate = index.date(),
-                        steps = value)
-                for index, value in iterrows
-            ]
-            self.user.latestUploadDate = datetime.date.today()
-            Workout.objects.bulk_create(save_to_db)
-            self.user.save()
-            
-            # steps_by_day.loc[steps_by_day[]]
+                iterrows = steps_by_day.items()
+                save_to_db = [
+                    Workout(user = self.request.user,
+                            workoutName = "steps",
+                            workoutDate = index.date(),
+                            steps = value)
+                    for index, value in iterrows
+                ]
+                self.user.latestUploadDate = datetime.date.today()
+                Workout.objects.bulk_create(save_to_db)
+                self.user.save()
+                
+                # steps_by_day.loc[steps_by_day[]]
+        except OSError:
+            pass
 
 # s = StepData()
 # s.save_step_data()

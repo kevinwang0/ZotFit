@@ -35,9 +35,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
 		# should be ordered by most recent day last
 		s = read_apple_data.StepData(self.request)
 		s.save_step_data()
-		s.get_recent_steps(7)
 		#context['steps'] = [8020,4630,11880,3025,8432,6448,7976]
-		context['steps'] = s.recent_steps
+		context['steps'] = s.get_recent_steps(7)
 		
 		# access the user object that is stored in the database
 		# note that the django user id and the member user id stored in db are different
