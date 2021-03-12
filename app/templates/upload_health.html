@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+	<button type="button" class="btn btn-dark btn-sm" disabled>Upload Health File</button>
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+	<div class="container-fluid py-4" style="background-image: linear-gradient(#c9efff, #ffffff);">
+		<div class="card col-sm-5 mx-auto">
+			<form class="card-body m-2" method="POST">
+
+				<div class="text-center">
+					<button type="submit" class="btn btn-primary btn-lg">Upload Health File</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}

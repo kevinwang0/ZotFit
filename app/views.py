@@ -13,6 +13,7 @@ from . import recommendations
 # from . import read_apple_data
 from .models import Member, Workout
 import decimal
+from .read_apple_data import StepData
 
 # Create your views here.
 def index(request):
@@ -168,8 +169,27 @@ class StrengthWorkoutView(LoginRequiredMixin, FormView):
 		form.save()
 		return super(StrengthWorkoutView, self).form_valid(form)
 
-# should prob have this in a different python file
-def handle_uploaded_file(f):
-	with open('uploaded_files/' + str(f), 'wb+') as destination:
-		for chunk in f.chunks():
-			destination.write(chunk)
+
+class UploadFile(LoginRequiredMixin, FormView):
+	template_name = "upload_health.html"
+	form_class = forms.UploadFileForm
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		return context
+
+	def form_valid(self, form):
+		self.handle_uploaded_file(self.request)
+		return HttpResponseRedirect(reverse_lazy('home'))
+
+	# should prob have this in a different python file
+	def handle_uploaded_file(self, request):
+		self.user = Member.objects.get(user=request.user.id)
+		file_to_save = request.FILES['healthData']
+
+
+		with open('uploaded_files/' + str(self.user.user_id), 'wb+') as destination:
+			for chunk in file_to_save.chunks():
+				destination.write(chunk)
+		step_data = StepData(request)
+		step_data.save_step_data()

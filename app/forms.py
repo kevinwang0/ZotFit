@@ -100,3 +100,7 @@ class StrengthWorkoutForm(forms.ModelForm):
 			'workoutPreference' : 'Did you like the exercise?'
 		}
 	field_order = ['workoutDate', 'workoutName', 'steps', 'sets', 'reps']
+
+
+class UploadFileForm(forms.Form):
+	healthData = forms.FileField(label="Your health data")

@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from app.views import HomeView, RegisterView, GetInfoView, StrengthWorkoutView, StepWorkoutView
+from app.views import HomeView, RegisterView, GetInfoView, StrengthWorkoutView, StepWorkoutView, UploadFile
 from django.contrib.auth import views as auth_views
 
 # for use with auth LoginView
@@ -19,4 +19,5 @@ urlpatterns = [
     path('logout', auth_views.LogoutView.as_view(), name='logout'),
     path('workout', StrengthWorkoutView.as_view(), name='workout'),
     path('steps', StepWorkoutView.as_view(), name='steps'),
+    path('upload_file', UploadFile.as_view(), name='upload_file')
 ]
