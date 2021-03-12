@@ -12,8 +12,11 @@ from . import forms
 from . import recommendations
 # from . import read_apple_data
 from .models import Member, Workout
-import decimal
 from .read_apple_data import StepData
+import decimal
+# for upload
+import zipfile
+import os
 
 # Create your views here.
 def index(request):
@@ -35,9 +38,11 @@ class HomeView(LoginRequiredMixin, TemplateView):
 		context = super().get_context_data(**kwargs)
 		# get last 7 reported steps (most recent last)
 		# TODO: duplicate handling
-		workouts = Workout.objects.filter(user=self.request.user).exclude(steps__isnull=True).order_by('workoutDate')[:7]
+		workouts = Workout.objects.filter(user=self.request.user).exclude(steps__isnull=True).order_by('-workoutDate')[:7]
 		dates = [w.workoutDate for w in workouts]
 		steps = [w.steps for w in workouts]
+		dates.reverse()
+		steps.reverse()
 		print("workouts", workouts, "dates", dates, "steps", steps)
 
 		context['labels'] = dates
@@ -169,27 +174,39 @@ class StrengthWorkoutView(LoginRequiredMixin, FormView):
 		form.save()
 		return super(StrengthWorkoutView, self).form_valid(form)
 
-
-class UploadFile(LoginRequiredMixin, FormView):
-	template_name = "upload_health.html"
+class UploadFileView(LoginRequiredMixin, FormView):
+	template_name = "form.html"
 	form_class = forms.UploadFileForm
+	success_url = 'home'
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
+		context['title'] = 'Upload Health Data'
+		context['button_title'] = 'Upload'
+		context['file'] = True
 		return context
 
-	def form_valid(self, form):
-		self.handle_uploaded_file(self.request)
-		return HttpResponseRedirect(reverse_lazy('home'))
-
-	# should prob have this in a different python file
-	def handle_uploaded_file(self, request):
-		self.user = Member.objects.get(user=request.user.id)
-		file_to_save = request.FILES['healthData']
-
-
-		with open('uploaded_files/' + str(self.user.user_id), 'wb+') as destination:
-			for chunk in file_to_save.chunks():
-				destination.write(chunk)
-		step_data = StepData(request)
-		step_data.save_step_data()
+	def post(self, request, *args, **kwargs):
+		# form_class = self.get_form_class()
+		form = self.form_class(request.POST, request.FILES)
+		upload = request.FILES['healthData']
+		print('upload',upload)
+		print('upload.chunks', upload.chunks())
+		if form.is_valid():
+			z = zipfile.ZipFile(upload)
+			print('z', z.namelist())
+			export = 'apple_health_export/export.xml'
+			if export in z.namelist():
+				dest_path = './uploads/user_' + str(request.user.id) + '/export.xml'
+				os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+				with open(dest_path, 'wb+') as dest:
+					print('saving to:', dest_path) 
+					# write export.xml from zip file
+					dest.write(z.read(export))
+					print('saving to db...')
+					step_data = StepData(request)
+					step_data.save_step_data()
+			return self.form_valid(form)
+		else:
+			return self.form_invalid(form)
+		return self.form_valid(form)

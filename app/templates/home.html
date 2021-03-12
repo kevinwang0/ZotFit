@@ -48,8 +48,11 @@
             </div>
             <div class="text-center my-4">
                 <!-- ugly, needs to become one thing -->
-                <a href="{% url 'steps' %}" class="btn btn-primary btn-lg mx-2">Record steps</a>
-                <a href="{% url 'workout' %}" class="btn btn-primary btn-lg mx-2">Finish workout</a>
+                <div class="btn-group">
+                    <a href="{% url 'upload' %}" class="btn btn-outline-dark btn-lg">Upload steps</a>
+                    <a href="{% url 'steps' %}" class="btn btn-outline-dark btn-lg">Record steps</a>
+                    <a href="{% url 'workout' %}" class="btn btn-outline-dark btn-lg">Finish workout</a>
+                </div>
             </div>
         </div>
 	</div>

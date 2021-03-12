@@ -16,14 +16,16 @@ class StepData:
             print("UNAUTHENTICATED")
 
     def save_step_data(self):
-        input_path = '/uploaded_files/user_' + str(self.user.user_id) + '/export.xml'
+        input_path = './uploads/user_' + str(self.user.user_id) + '/export.xml'
+        # print('trying to open health data:', input_path)
         try: 
             with open(input_path, 'r') as xml_file:
+                print('parsing...')
                 # converting xml to pandas dataframe
                 input_data = xmltodict.parse(xml_file.read())
                 records_list = input_data['HealthData']['Record']
                 df = pd.DataFrame(records_list)
-                print(df.columns)
+                print("df.columns", df.columns)
 
                 # converting to pandas datetime object
                 format = '%Y-%m-%d %H:%M:%S %z'
@@ -35,9 +37,9 @@ class StepData:
                                                 format=format)
 
                 # converting steps to integer
-                # dt = datetime.datetime(2020, 12, 12, 5,5,5,5)
-                dt = self.user.latestUploadDate
-                print(dt)
+                dt = datetime.datetime(1900, 12, 12, 5,5,5,5)
+                # dt = self.user.latestUploadDate
+                # print("latestUploadDate", dt)
                 dt = datetime.datetime(dt.year, dt.month, dt.day)
                 dt = pytz.utc.localize(dt)
                 step_counts = df.loc[(df['@type'] == 'HKQuantityTypeIdentifierStepCount') & (df['@creationDate'] > dt)]
@@ -68,6 +70,8 @@ class StepData:
                     for index, value in iterrows
                 ]
                 self.user.latestUploadDate = datetime.date.today()
+                print("deleting past steps and saving to db...")
+                Workout.objects.filter(user=self.request.user, workoutName="steps").delete()
                 Workout.objects.bulk_create(save_to_db)
                 self.user.save()
                 

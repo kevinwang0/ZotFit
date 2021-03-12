@@ -145,4 +145,4 @@ cython_debug/
 .DS_Store
 
 # uploaded files
-uploaded_files/*
+uploads/

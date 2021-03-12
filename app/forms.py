@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.core.validators import FileExtensionValidator
 from .models import Member, Workout
 
 class RegisterForm(UserCreationForm):
@@ -101,6 +102,6 @@ class StrengthWorkoutForm(forms.ModelForm):
 		}
 	field_order = ['workoutDate', 'workoutName', 'steps', 'sets', 'reps']
 
-
 class UploadFileForm(forms.Form):
-	healthData = forms.FileField(label="Your health data")
+	healthData = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=['zip'])], 
+		label="Your health data", help_text='To get this file, go to Apple Health > Profile > Export Health Data.')

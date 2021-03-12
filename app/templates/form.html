@@ -9,7 +9,7 @@
 {% block content %}
 	<div class="container-fluid py-4" style="background-image: linear-gradient(#c9efff, #ffffff);">
 		<div class="card col-sm-5 mx-auto">
-			<form class="card-body m-2" method="POST">
+			<form class="card-body m-2" method="POST"{% if file %} enctype="multipart/form-data"{% endif %}>
 				{% csrf_token %}
 				<h3 class="card-title">{% block title %}{{ title }}{% endblock %}</h3>
 				{{ form|crispy }}

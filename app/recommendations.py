@@ -134,10 +134,10 @@ class Recommendation:
         for i in range(len(self.exercise_recs_id)):
             for index, row in self.df.loc[(self.df['id'] == self.exercise_recs_id[i]) & (self.df['overallMin'] <= self.overall_score[i]) & (
                     self.overall_score[i] <= self.df['overallMax'])].iterrows():
-                print(final_recs)
-                print(row)
+                print("final_recs", final_recs)
+                print("row", row)
                 if row['exercise'] not in final_recs:
-                    print(row['exercise'])
+                    print('row[exercise]',row['exercise'])
                     optional_eqp = []
                     for eqp in self.user_eqp:
                         if row[eqp]:
@@ -239,12 +239,12 @@ class Recommendation:
 
         # self.user.latestExerciseRecDate = datetime.date(2020,3,3)
         if (self.user.latestExerciseRecDate == datetime.date.today()):
-            print(self.user.latestExerciseRecs)
+            print('latestExerciseRecs', self.user.latestExerciseRecs)
             exercise_dict = json.loads(self.user.latestExerciseRecs)
-            print('e:', exercise_dict)
+            print('exercise_dict', exercise_dict)
             self.ex_from_dict(exercise_dict)
             self.step_rec = self.user.latestStepsRecs
-            print(self.final_recs)
+            print('self.final_recs',self.final_recs)
 
         
 
@@ -263,9 +263,9 @@ class Recommendation:
             print("steps: ", self.step_rec)
 
             self.fill_difficulty()
-            print(self.final_recs)
-            print(self.get_sets_reps())
-            print(self.final_recs)
+            print('final_recs',self.final_recs)
+            print('get_sets_reps()',self.get_sets_reps())
+            print('final_recs',self.final_recs)
 
             self.user.latestExerciseRecDate = datetime.date.today()
             self.user.latestExerciseRecs = json.dumps(self.exerciseListToDb)
