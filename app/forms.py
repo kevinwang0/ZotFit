@@ -92,7 +92,7 @@ class StepWorkoutForm(forms.ModelForm):
 class StrengthWorkoutForm(forms.ModelForm):
 	class Meta:
 		model = Workout
-		exclude = ('user',)
+		exclude = ('user', 'steps')
 		widgets = {
 			'workoutDate' : forms.DateInput({'type': 'date'}),
 		}
