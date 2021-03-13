@@ -11,7 +11,7 @@
 
 {% block navbar %}
     <!-- dev, should be removed in demo -->
-    <small class="text-muted">user: {{user.username}}</small>
+    <!-- <small class="text-muted">user: {{user.username}}</small> -->
 	<a href="{% url 'logout' %}" class="btn btn-dark btn-sm">Logout</a>
 {% endblock %}
 
@@ -35,7 +35,7 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title" style="font-weight: bold;">{{ workout.name }} ({{ workout.combination }})</h4>
-                        <p class="card-text"><small class="text-muted">Requires: {{ workout.requires|join:", " }}</small></p>
+                        <p class="card-text"><small class="text-muted">Requires: {{ workout.requires|slice:"1:"|join:", " }}</small></p>
                     </div>
                 </div>
                 {% endfor %}
