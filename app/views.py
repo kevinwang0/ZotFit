@@ -53,8 +53,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
 		r = recommendations.Recommendation(self.request)
 		r.make_recommendations()
 
-		# context['recommendations'] = r.final_recs
-		context['recommendations'] = [ExampleRecommendation(),ExampleRecommendation(),ExampleRecommendation()]
+		context['recommendations'] = r.final_recs
+		# context['recommendations'] = [ExampleRecommendation(),ExampleRecommendation(),ExampleRecommendation()]
 		context['step_rec'] = r.step_rec
 		return context
 

@@ -6,9 +6,53 @@ from .models import MemberManager, Member
 from django.contrib.auth.models import User
 import json
 
+# TODO: sync this with models.py
+WORKOUT_CHOICES = {
+    'squat': 'Squats',
+    'lunge': 'Lunges',
+    'reverseLunge': 'Reverse Lunges',
+    'jumpSquat': 'Jump Squats',
+    'lateralLunge': 'Lateral Lunges',
+    'calfRaise': 'Calf Raises',
+    'singleCalfRaise': 'Single Calf Raises',
+    'jumpingJack': 'Jumping Jacks',
+    'sealJump': 'Seal Jumps',
+    'inwardCalfRaise': 'Inward Calf Raises',
+    'gluteBridge': 'Glute Bridges',
+    'inchworm': 'Inchworms',
+    'goodMorning': 'Good Mornings',
+    'romanianDeadlift': 'Romanian Dead Lifts',
+    'quadLegCurl': 'Quad Leg Curls',
+    'pushup': 'Pushups',
+    'benchDip': 'Bench Dips',
+    'pressup': 'Pressups',
+    'plankTap': 'Plank Taps',
+    'diamondPushup': 'Diamond Pushups',
+    'russianTwist': 'Russian Twists',
+    'situp': 'Situps',
+    'legRaise': 'Leg Raises',
+    'deadBug': 'Dead Bugs',
+    'crunchyFrog': 'Crunchy Frogs',
+    'reverseSnowAngel': 'Reverse Snow Angels',
+    'superman': 'Supermans',
+    'plankRow': 'Plank Rows',
+    'lowRow': 'Low Rows',
+    'latPulldown': 'Lat Pulldowns',
+    'pullup': 'Pullups',
+    'bicepCurl': 'Bicep Curls',
+    'deadlift': 'Deadlifts',
+    'benchpress': 'Benchpress',
+    'hammerCurl': 'Hammer Curls',
+    'medicineBallSlam': 'Medicine Ball Slams',
+    'shoulderPress': 'Shoulder Presses',
+    'tricepExtension': 'Tricep Extensions',
+    'chinup': 'Chinups',
+}
+
+
 class Exercise:
     def __init__(self, name, sets, reps, video_link, eqp_list):
-        self.name = name
+        self.name = WORKOUT_CHOICES[name]
         self.combination = str(sets) + 'x' + str(reps)
         self.embed = video_link
         self.requires = eqp_list
@@ -222,7 +266,7 @@ class Recommendation:
             elif weekday == 4:
                 muscle_list = ['back', 'core']
             elif weekday == 5:
-                pass
+                muscle_list = ['quadricep', 'calf', 'hamstring']
             elif weekday == 6:
                 pass
         
