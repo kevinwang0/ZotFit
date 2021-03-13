@@ -216,7 +216,7 @@ class Workout(models.Model):
         ('jumpingJack', 'Jumping Jacks'),
         ('sealJump', 'Seal Jumps'),
         ('inwardCalfRaise', 'Inward Calf Raises'),
-        ('gluteBridge', 'Glue Bridges'),
+        ('gluteBridge', 'Glute Bridges'),
         ('inchworm', 'Inchworms'),
         ('goodMorning', 'Good Mornings'),
         ('romanianDeadlift', 'Romanian Dead Lifts'),
